@@ -13,8 +13,7 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-
-import frc.robot.subsystems.SwerveDrive.SwerveModNum;
+import frc.robot.subsystems.base.SwerveDrive.SwerveModNum;
 
 /**
  * A command to test one swerve module at a time, it takes that module 

@@ -15,7 +15,21 @@ import edu.wpi.first.math.geometry.Translation2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    /*
+     * PALMAC!!!!!!!
+     */
+    public static final int ARM_SHOULDER_ID = -1; // Normal Neo
+    public static final int ARM_WRIST_ID = -2; // Neo 550
+    public static final int ARM_TELESCOPE_ID = -3; // "Winching" motor?
 
+
+
+
+
+
+     /*
+      * Greater Rochester Robotics
+      */
     /* Factors of PI */
     public static final double PI_OVER_TWO = Math.PI/2;
     public static final double THREE_PI_OVER_TWO = 3*PI_OVER_TWO;
@@ -47,7 +61,7 @@ public final class Constants {
     /* PID Constants for rotation of the swerve module */
     public static final double SWERVE_ROT_P_VALUE = 0.1;
     public static final double SWERVE_ROT_I_VALUE = 0.0;
-    public static final double SWERVE_ROT_D_VALUE = 0.05; 
+    public static final double SWERVE_ROT_D_VALUE = 0.05;
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;
     public static final double SWERVE_ROT_FF_VALUE = 0.0;
     
@@ -98,5 +112,9 @@ public final class Constants {
     /* Solenoid Channels */
     
     /* Digital Input */
+
+
+
+
     
 }

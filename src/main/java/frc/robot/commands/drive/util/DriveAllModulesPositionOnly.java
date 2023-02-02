@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.XboxController.Axis;
 
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.SwerveDrive.SwerveModNum;
+import frc.robot.subsystems.base.SwerveDrive.SwerveModNum;
 
 /**
  * This command is for tuning the PIDF loop on the modules' 
