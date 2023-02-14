@@ -31,7 +31,9 @@ import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveSetGyro;
 import frc.robot.commands.drive.util.DriveTuneDriveMotorPID;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
+import frc.robot.commands.operational.util.ArmReadShoulderEncoder;
 import frc.robot.subsystems.base.SwerveDrive;
+import frc.robot.subsystems.moving.ArmSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -86,6 +88,7 @@ public class RobotContainer {
 
   //The robot's subsystems are instantiated here
   public static SwerveDrive swerveDrive;
+  public static ArmSubsystem armSubsystem;
 
   //The sendable chooser for autonomous is constructed here
   public static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
@@ -99,6 +102,9 @@ public class RobotContainer {
     swerveDrive.setDefaultCommand(new DriveRobotCentric(false));
     // swerveDrive.setDefaultCommand(new DriveFieldRelative(false));
     // swerveDrive.setDefaultCommand(new DriveFieldRelativeAdvanced(false));
+
+    armSubsystem = new ArmSubsystem();
+
     
     //Add all autos to the auto selector
     configureAutoModes();
@@ -114,7 +120,8 @@ public class RobotContainer {
     SmartDashboard.putData("Drive Module 2", new DriveOneModule(2));//For setup of swerve
     SmartDashboard.putData("Drive Module 3", new DriveOneModule(3));//For setup of swerve
     SmartDashboard.putData(new DriveAllModulesPositionOnly());
-    SmartDashboard.putData(new DriveStopAllModules());//For setup of swervee
+    SmartDashboard.putData(new ArmReadShoulderEncoder()); // For setup of arm
+    SmartDashboard.putData(new DriveStopAllModules());//For setup of swerve
     SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));//for testing turn to angle function
     
     CameraServer.startAutomaticCapture();
