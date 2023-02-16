@@ -46,7 +46,7 @@ public class ArmSubsystem extends SubsystemBase {
     private double currentTargetPos = 0.0d; // this value should be the FRC legal resting position (unknown value resulting in between 0 and 90 degrees)
 
 
-    public double desiredPoint = 5;
+    public double desiredPoint = 8;
     private boolean isDumping = false;
     private boolean doneDumping = false;
     private String dumpFile = "/home/lvuser/pid_data.csv";
@@ -64,8 +64,6 @@ public class ArmSubsystem extends SubsystemBase {
         }
         start = -1L;
 
-        SmartDashboard.putNumber("DesireddPoint", 5);
-
         shoulderMotor.setIdleMode(IdleMode.kBrake);
         armPidController.setTolerance(0.1);
         armPidController.setSetpoint(desiredPoint);
@@ -75,6 +73,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
 
         SmartDashboard.putNumber("ShoulderAbsEncVal", getArmAbsolutePosition());
+        SmartDashboard.putNumber("DesiredValue", desiredPoint);
 
         // PID Data dumping
         if(isDumping) {
@@ -147,15 +146,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public CommandBase telescopeExtend() {
-        if(telescopeMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).isPressed()) return runOnce(()->{});
-        return runOnce(() -> {
-            telescopeMotor.set(0.5d);
-        });
+        return runOnce(() -> telescopeMotor.set(0.25d));
     }
 
     public CommandBase telescopeRetract() {
-        if(telescopeMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen).isPressed()) return runOnce(()->{});
-        return runOnce(() -> telescopeMotor.set(-0.5d));
+        return runOnce(() -> telescopeMotor.set(-0.25d));
     }
 
     public CommandBase waitUntilWristRotatedToDeg(int degrees) {
@@ -194,6 +189,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void toggleDumping() {
         INSTANCE.isDumping = !INSTANCE.isDumping;
+    }
+
+    public void resetArmAbsolutePosition() {
+        shoulderMotor.getEncoder().setPosition(0.0);
     }
 
     public double getArmAbsolutePosition() {

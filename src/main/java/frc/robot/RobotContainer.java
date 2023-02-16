@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -32,7 +34,8 @@ import frc.robot.commands.drive.util.DriveSetGyro;
 import frc.robot.commands.drive.util.DriveTuneDriveMotorPID;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.util.ArmExportData;
-import frc.robot.commands.operational.util.ArmSetDesiredPoint;
+import frc.robot.commands.operational.util.ArmResetEncoder;
+import frc.robot.commands.operational.util.ArmTurnToOffset;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 
@@ -121,7 +124,7 @@ public class RobotContainer {
     SmartDashboard.putData("Drive Module 3", new DriveOneModule(3));//For setup of swerve
     SmartDashboard.putData(new DriveAllModulesPositionOnly()); // For setup of Swerve
     SmartDashboard.putData(new ArmExportData()); // For setup of Arm
-    SmartDashboard.putData(new ArmSetDesiredPoint());
+    SmartDashboard.putData(new ArmResetEncoder()); // For setup of Arm
     SmartDashboard.putData(new DriveStopAllModules());//For setup of swerve
     SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));//for testing turn to angle function
     
@@ -137,6 +140,16 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* ==================== DRIVER BUTTONS ==================== */
     driverLB.onTrue(new DriveResetGyroToZero());
+    driverA.onTrue(new ArmTurnToOffset(2.5));
+    driverB.onTrue(new ArmTurnToOffset(-2.5));
+
+    driverY.whileTrue(armSubsystem.telescopeExtend());
+    driverY.onFalse(armSubsystem.stopTelescope());
+    driverX.whileTrue(armSubsystem.telescopeRetract());
+    driverX.onFalse(armSubsystem.stopTelescope());
+    //driverX.onTrue(new InstantCommand(() -> armSubsystem.telescopeRetract()));
+    //driverX.onFalse(new InstantCommand(() -> armSubsystem.stopTelescope()));
+
     driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
     /* =================== CODRIVER BUTTONS =================== */

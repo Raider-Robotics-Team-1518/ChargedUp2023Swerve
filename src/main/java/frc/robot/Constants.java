@@ -16,11 +16,11 @@ import edu.wpi.first.math.geometry.Translation2d;
  */
 public final class Constants {
     /*
-     * PALMAC!!!!!!!
+     * Raider Robotics 1518
      */
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
     public static final int ARM_WRIST_ID = -2; // Neo 550
-    public static final int ARM_TELESCOPE_ID = 31; // "Winching" motor?
+    public static final int ARM_TELESCOPE_ID = 31; // Winching motor
 
     /*
      * Non-Swerve PID
