@@ -31,7 +31,8 @@ import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveSetGyro;
 import frc.robot.commands.drive.util.DriveTuneDriveMotorPID;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
-import frc.robot.commands.operational.util.ArmReadShoulderEncoder;
+import frc.robot.commands.operational.util.ArmExportData;
+import frc.robot.commands.operational.util.ArmSetDesiredPoint;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 
@@ -111,7 +112,6 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-
     //add some commands to dashboard for testing/configuring
     SmartDashboard.putData(new DriveAdjustModulesManually());//For setup of swerve
     SmartDashboard.putData(new DriveResetAllModulePositionsToZero());//For setup of swerve
@@ -119,8 +119,9 @@ public class RobotContainer {
     SmartDashboard.putData("Drive Module 1", new DriveOneModule(1));//For setup of swerve
     SmartDashboard.putData("Drive Module 2", new DriveOneModule(2));//For setup of swerve
     SmartDashboard.putData("Drive Module 3", new DriveOneModule(3));//For setup of swerve
-    SmartDashboard.putData(new DriveAllModulesPositionOnly());
-    SmartDashboard.putData(new ArmReadShoulderEncoder()); // For setup of arm
+    SmartDashboard.putData(new DriveAllModulesPositionOnly()); // For setup of Swerve
+    SmartDashboard.putData(new ArmExportData()); // For setup of Arm
+    SmartDashboard.putData(new ArmSetDesiredPoint());
     SmartDashboard.putData(new DriveStopAllModules());//For setup of swerve
     SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));//for testing turn to angle function
     

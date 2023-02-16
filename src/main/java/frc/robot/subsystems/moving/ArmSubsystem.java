@@ -1,14 +1,26 @@
 package frc.robot.subsystems.moving;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.commands.operational.util.ArmExportData;
 
 public class ArmSubsystem extends SubsystemBase {
     // "shoulder" is the pivot point at the top of the tower, raises & lowers the arm
@@ -18,10 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
     // "telescope" is the part of the arm that extends/retracts
     private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
 
-    public static ArmSubsystem INSTANCE;
-    public ArmSubsystem() {
-        INSTANCE = this;
-    }
+
+    public final PIDController armPidController = new PIDController(Constants.ARM_MOVE_P, Constants.ARM_MOVE_I, Constants.ARM_MOVE_D);
+
 
     /* All of these values should be measured using the Absolute Encoder, not the Relative Encoder, 
     frc.robot.commands.operational.ArmReadShoulderEncoder.java command should display a value in Shuffleboard when enabled */ 
@@ -33,9 +44,62 @@ public class ArmSubsystem extends SubsystemBase {
                                                      but it still must be measured in order to get accurate encoder resolution to angle conversion)*/
 
     private double currentTargetPos = 0.0d; // this value should be the FRC legal resting position (unknown value resulting in between 0 and 90 degrees)
-  
+
+
+    public double desiredPoint = 5;
+    private boolean isDumping = false;
+    private boolean doneDumping = false;
+    private String dumpFile = "/home/lvuser/pid_data.csv";
+    private BufferedWriter writer;
+    private long start = -1L;
+
+    public static ArmSubsystem INSTANCE;
+    public ArmSubsystem() {
+        INSTANCE = this;
+        try { 
+            new File(dumpFile).createNewFile();
+            writer = new BufferedWriter(new FileWriter(dumpFile)); 
+        } catch(Exception e){ 
+            e.printStackTrace(); 
+        }
+        start = -1L;
+
+        SmartDashboard.putNumber("DesireddPoint", 5);
+
+        shoulderMotor.setIdleMode(IdleMode.kBrake);
+        armPidController.setTolerance(0.1);
+        armPidController.setSetpoint(desiredPoint);
+    }
+
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("ShoulderAbsEncVal", getArmAbsolutePosition());
+
+        // PID Data dumping
+        if(isDumping) {
+            try {
+                if(start == -1L) {
+                    start = System.currentTimeMillis();
+                    writer.append("Time,Input,Output");
+                    writer.newLine();
+                }
+                doDump();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(!DriverStation.isEnabled()) return;
+        /*!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!*/
+
+        //System.out.println("At Setpoint: " + (armPidController.atSetpoint() ? "True" : "False"));
+        if(!armPidController.atSetpoint()) {
+            //System.out.println("Sent Input: " + armPidController.calculate(this.getArmAbsolutePosition(), 5));
+            shoulderMotor.set(armPidController.calculate(this.getArmAbsolutePosition(), desiredPoint));
+        } else {
+            shoulderMotor.set(0);
+        }
         //fixateShoulder(currentTargetPos);
     }
 
@@ -128,6 +192,55 @@ public class ArmSubsystem extends SubsystemBase {
         return Commands.sequence(stopShoulder(), stopWrist(), stopTelescope());
     }
 
+    public void toggleDumping() {
+        INSTANCE.isDumping = !INSTANCE.isDumping;
+    }
+
+    public double getArmAbsolutePosition() {
+        return shoulderMotor.getEncoder().getPosition();
+    }
+
+    public void doDump() throws IOException {
+        float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
+        if(timeElapsed >= 1000 && timeElapsed <= 2000) {
+            shoulderMotor.set(0.1);
+        } else if(timeElapsed > 2000 && timeElapsed <= 3000) {
+            shoulderMotor.set(0);
+        } else if(timeElapsed > 3000 && timeElapsed <= 3500) {
+            shoulderMotor.set(-0.1);
+        } else if(timeElapsed > 3500 && timeElapsed <= 4500) {
+            shoulderMotor.set(0);
+        } else if(timeElapsed > 4500 && timeElapsed <= 5500) {
+            shoulderMotor.set(0.2);
+        } else if(timeElapsed > 5500 && timeElapsed <= 6500) {
+            shoulderMotor.set(0);
+        } else if(timeElapsed > 6500 && timeElapsed <= 7000) {
+            shoulderMotor.set(-0.2);
+        } else if(timeElapsed > 7000 && timeElapsed <= 8000) {
+            shoulderMotor.set(0.0);
+        }
+
+        writer.append(timeElapsed + "," + shoulderMotor.get() + "," + getArmAbsolutePosition());
+        writer.newLine();
+        if(timeElapsed >= 8000) {
+            isDumping = false;
+            doneDumping = true;
+            start = -1L;
+            writer.close();
+        }
+    }
+
+    public boolean getDumping() {
+        return INSTANCE.isDumping;
+    }
+
+    public void setDoneDumping(boolean b) {
+        INSTANCE.doneDumping = b;
+    }
+    
+    public boolean getDoneDumping() {
+        return INSTANCE.doneDumping;
+    }
 
     public CANSparkMax getShoulderMotor() {
         return INSTANCE.shoulderMotor;
