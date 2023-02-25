@@ -6,21 +6,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.commands.operational.util.ArmExportData;
 
 public class ArmSubsystem extends SubsystemBase {
     // "shoulder" is the pivot point at the top of the tower, raises & lowers the arm
@@ -30,26 +25,33 @@ public class ArmSubsystem extends SubsystemBase {
     // "telescope" is the part of the arm that extends/retracts
     private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
 
-
-    public final PIDController armPidController = new PIDController(Constants.ARM_MOVE_P, Constants.ARM_MOVE_I, Constants.ARM_MOVE_D);
-
-
-    /* All of these values should be measured using the Absolute Encoder, not the Relative Encoder, 
-    frc.robot.commands.operational.ArmReadShoulderEncoder.java command should display a value in Shuffleboard when enabled */ 
-    private final double shoulderHeighestRev = 0.0d; // 180 deg (Facing straight up, this position is very unlikely in real life, but must be measured for angle conversion accuracy)
-
-    private final double shoulderEvenRev = 0.0d; // 90 deg (Facing straight out, this will be pretty close to the angle needed to place a game object)
-
-    private final double shoulderLowestRev = 0.0d; /*0 deg (Facing straight down, this value will also be impossible to reach in real life due to robot parts being in the way,
-                                                     but it still must be measured in order to get accurate encoder resolution to angle conversion)*/
-
-    private double currentTargetPos = 0.0d; // this value should be the FRC legal resting position (unknown value resulting in between 0 and 90 degrees)
+    public final PIDController shoulderPidController = new PIDController(Constants.ARM_SHOULDER_P, Constants.ARM_SHOULDER_I, Constants.ARM_SHOULDER_D);
+    public final PIDController wristPidController = new PIDController(Constants.ARM_WRIST_P, Constants.ARM_WRIST_I, Constants.ARM_WRIST_D);
 
 
-    public double desiredPoint = 8;
+    // Objects not specific to dumping
+
+    // shoulder
+    /* !!! The zero of the shoulder should be setup before every match to ensure accuracy !!! */
+    private double shoulderHighestPos = 100d; // Arm is facing the ceiling (180 deg)
+    public double firstShoulderPoint = 0;
+
+    // telescope
+    private final double fullyWoundTelescopePositon = 100d; // Telescope fully retracted
+    private final double fullyUnwoundTelescopePositon = 0d; // Telescope fully extended
+
+    // wrist
+    private final double maxWristPos = 100d; // 180 deg
+    private final double levelWristPos = 0d; // 90 deg
+    private final double minWristPos = -100d; // 0 deg
+
+
+    // Objects specific to the dump process
     private boolean isDumping = false;
     private boolean doneDumping = false;
-    private String dumpFile = "/home/lvuser/pid_data.csv";
+    private DumpMode currentDumpMode = DumpMode.SHOULDER;
+    private String shoulderDumpFile = "/home/lvuser/shoulder_pid_data.csv";
+    private String wristDumpFile = "/home/lvuser/shoulder_pid_data.csv";
     private BufferedWriter writer;
     private long start = -1L;
 
@@ -57,23 +59,32 @@ public class ArmSubsystem extends SubsystemBase {
     public ArmSubsystem() {
         INSTANCE = this;
         try { 
-            new File(dumpFile).createNewFile();
-            writer = new BufferedWriter(new FileWriter(dumpFile)); 
+            new File("/home/lvuser/1518dump").mkdir();
+            new File(shoulderDumpFile).createNewFile();
+            new File(wristDumpFile).createNewFile();
+            writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
         } catch(Exception e){ 
             e.printStackTrace(); 
         }
         start = -1L;
 
         shoulderMotor.setIdleMode(IdleMode.kBrake);
-        armPidController.setTolerance(0.1);
-        armPidController.setSetpoint(desiredPoint);
+
+        // shoulder pid setup
+        shoulderPidController.setTolerance(0.1);
+        shoulderPidController.setSetpoint(firstShoulderPoint);
+
+        // arm pid setup
+        wristPidController.setTolerance(0.1);
+
     }
 
     @Override
     public void periodic() {
 
-        SmartDashboard.putNumber("ShoulderAbsEncVal", getArmAbsolutePosition());
-        SmartDashboard.putNumber("DesiredValue", desiredPoint);
+        SmartDashboard.putNumber("ShoulderEncVal", getShoulderPosition());
+        SmartDashboard.putNumber("ShoulderDesiredPos", shoulderPidController.getSetpoint());
+        SmartDashboard.putNumber("WristEncVal", getWristPosition());
 
         // PID Data dumping
         if(isDumping) {
@@ -83,7 +94,14 @@ public class ArmSubsystem extends SubsystemBase {
                     writer.append("Time,Input,Output");
                     writer.newLine();
                 }
-                doDump();
+                switch(currentDumpMode) {
+                    case SHOULDER:
+                        doShoulderDump();
+                        break;
+                    case WRIST:
+                        doWristDump();
+                        break;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -91,84 +109,76 @@ public class ArmSubsystem extends SubsystemBase {
 
         if(!DriverStation.isEnabled()) return;
         /*!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!*/
+        fixateShoulder();
+    }
 
-        //System.out.println("At Setpoint: " + (armPidController.atSetpoint() ? "True" : "False"));
-        if(!armPidController.atSetpoint()) {
-            //System.out.println("Sent Input: " + armPidController.calculate(this.getArmAbsolutePosition(), 5));
-            shoulderMotor.set(armPidController.calculate(this.getArmAbsolutePosition(), desiredPoint));
+    public void setWristTargetPos(double target, boolean angle) {
+        double targetPos = target;
+        if(angle) targetPos = ((target/180)*maxWristPos);
+        wristPidController.setSetpoint(targetPos);
+    }
+
+    public void setShoulderTargetPos(double target, boolean angle) {
+        double targetPos = target;
+        if(angle) {
+            if(target > 90) {
+                targetPos = ((target-90)/90)*shoulderHighestPos;
+            } else {
+                targetPos = -(shoulderHighestPos+((-(target/90))*shoulderHighestPos));
+            }
+        }
+        shoulderPidController.setSetpoint(targetPos);
+    }
+
+    public void fixateArm(boolean lockedWrist) {
+        if(lockedWrist) setWristTargetPos(90+getShoulderAngle(), true);
+
+        fixateShoulder();
+
+    }
+
+    public void fixateWrist() {
+        if(!wristPidController.atSetpoint()) {
+            wristMotor.set(wristPidController.calculate(this.getWristPosition(), wristPidController.getSetpoint()));
+        } else {
+            wristMotor.set(0);
+        }
+    }
+
+    public void fixateShoulder() {
+        if(!shoulderPidController.atSetpoint()) {
+            shoulderMotor.set(shoulderPidController.calculate(this.getShoulderPosition(), shoulderPidController.getSetpoint()));
         } else {
             shoulderMotor.set(0);
         }
-        //fixateShoulder(currentTargetPos);
     }
 
-    public CommandBase fixateShoulder(double targetPosition) {
-        return Commands.sequence(moveArmBestDirection(targetPosition),
-            waitUntilShoulderPosEquals(targetPosition),
-            stopShoulder());
+    public boolean isWristInRange() {
+        double wristPos = wristMotor.getEncoder().getPosition();
+        return ((wristPos < maxWristPos) && (wristPos > minWristPos));
     }
 
-    public CommandBase waitUntilShoulderPosEquals(double targetRev) {
-        if(shoulderWithinRange(targetRev)) return runOnce(()->{});
-        return Commands.waitUntil(() -> shoulderWithinRange(targetRev));
+    public boolean isTelescopeInRange() {
+        double telescopePos = telescopeMotor.getEncoder().getPosition();
+        return ((telescopePos < fullyWoundTelescopePositon) && (telescopePos > fullyUnwoundTelescopePositon));
     }
 
-    public CommandBase moveArmBestDirection(double targetRev) {
-        SparkMaxAbsoluteEncoder absoluteEncoder = shoulderMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-        double currentRevolutions = absoluteEncoder.getPosition()*absoluteEncoder.getPositionConversionFactor();
-        if(shoulderWithinRange(targetRev)) return runOnce(()->{});
-        if(currentRevolutions < targetRev) return shoulderUp();
-        if(currentRevolutions > targetRev) return shoulderDown();
-        return runOnce(()->{});
+    public double getShoulderAngle() {
+        /* since i only know the position from (zero/90 deg) horizontal to (180 deg) the highest point, 
+        calculations must be done to account for negative values */
+        if(getShoulderPosition() > 0) {
+            // above (zero) horizontal pos
+            return 90+((Math.abs(getShoulderPosition()) / shoulderHighestPos)*90);
+        }
+        return 90-((Math.abs(getShoulderPosition()) / shoulderHighestPos)*90);
     }
 
-    public boolean shoulderWithinRange(double targetPosition) {
-        SparkMaxAbsoluteEncoder absoluteEncoder = shoulderMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-        double currentRevolutions = absoluteEncoder.getPosition()*absoluteEncoder.getPositionConversionFactor();
-        return (currentRevolutions <= targetPosition+10) && (currentRevolutions >= targetPosition-10);
+    public void resetWristEncoder() {
+        wristMotor.getEncoder().setPosition(0.0d);
     }
 
-
-    public CommandBase shoulderUp() {
-        return runOnce(() -> shoulderMotor.set(1.0d));
-    }
-    
-
-    public CommandBase shoulderDown() {
-        return runOnce(() -> shoulderMotor.set(-1.0d));
-    }
-
-    public CommandBase rotateWrist(int degrees) {
-        return Commands.sequence(resetWristEncoder(),
-            enableWrist(),
-            waitUntilWristRotatedToDeg(degrees),
-            disableWrist());
-    }
-
-    public CommandBase telescopeExtend() {
-        return runOnce(() -> telescopeMotor.set(0.25d));
-    }
-
-    public CommandBase telescopeRetract() {
-        return runOnce(() -> telescopeMotor.set(-0.25d));
-    }
-
-    public CommandBase waitUntilWristRotatedToDeg(int degrees) {
-        return Commands.waitUntil(() -> (wristMotor.getEncoder().getPosition()*360) >= degrees);
-    }
-
-    public CommandBase enableWrist() {
-        return runOnce(() -> wristMotor.set(1.0d));
-    }
-
-    public CommandBase disableWrist() {
-        return runOnce(() -> wristMotor.set(1.0d));
-    }
-
-    public CommandBase resetWristEncoder() {
-        return runOnce(() -> {
-            wristMotor.getEncoder().setPosition(0.0d);
-        });
+    public double getWristPosition() {
+        return wristMotor.getEncoder().getPosition();
     }
 
     public CommandBase stopShoulder() {
@@ -187,19 +197,24 @@ public class ArmSubsystem extends SubsystemBase {
         return Commands.sequence(stopShoulder(), stopWrist(), stopTelescope());
     }
 
-    public void toggleDumping() {
+    public void toggleDumping(DumpMode dumpMode) {
+        INSTANCE.currentDumpMode = dumpMode;
         INSTANCE.isDumping = !INSTANCE.isDumping;
     }
 
-    public void resetArmAbsolutePosition() {
+    public void setShoulderMaxPos(double highestPosition) {
+        INSTANCE.shoulderHighestPos = highestPosition;
+    }
+
+    public void resetShoulderPosition() {
         shoulderMotor.getEncoder().setPosition(0.0);
     }
 
-    public double getArmAbsolutePosition() {
+    public double getShoulderPosition() {
         return shoulderMotor.getEncoder().getPosition();
     }
 
-    public void doDump() throws IOException {
+    public void doShoulderDump() throws IOException {
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
             shoulderMotor.set(0.1);
@@ -219,7 +234,37 @@ public class ArmSubsystem extends SubsystemBase {
             shoulderMotor.set(0.0);
         }
 
-        writer.append(timeElapsed + "," + shoulderMotor.get() + "," + getArmAbsolutePosition());
+        writer.append(timeElapsed + "," + shoulderMotor.get() + "," + getShoulderPosition());
+        writer.newLine();
+        if(timeElapsed >= 8000) {
+            isDumping = false;
+            doneDumping = true;
+            start = -1L;
+            writer.close();
+        }
+    }
+
+    public void doWristDump() throws IOException {
+        float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
+        if(timeElapsed >= 1000 && timeElapsed <= 2000) {
+            wristMotor.set(0.2);
+        } else if(timeElapsed > 2000 && timeElapsed <= 3000) {
+            wristMotor.set(0);
+        } else if(timeElapsed > 3000 && timeElapsed <= 3500) {
+            wristMotor.set(-0.2);
+        } else if(timeElapsed > 3500 && timeElapsed <= 4500) {
+            wristMotor.set(0);
+        } else if(timeElapsed > 4500 && timeElapsed <= 5500) {
+            wristMotor.set(0.4);
+        } else if(timeElapsed > 5500 && timeElapsed <= 6500) {
+            wristMotor.set(0);
+        } else if(timeElapsed > 6500 && timeElapsed <= 7000) {
+            wristMotor.set(-0.4);
+        } else if(timeElapsed > 7000 && timeElapsed <= 8000) {
+            wristMotor.set(0.0);
+        }
+
+        writer.append(timeElapsed + "," + shoulderMotor.get() + "," + getWristPosition());
         writer.newLine();
         if(timeElapsed >= 8000) {
             isDumping = false;
@@ -251,6 +296,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public CANSparkMax getTelescopeMotor() {
         return INSTANCE.telescopeMotor;
+    }
+
+    public static enum DumpMode {
+        SHOULDER, WRIST
     }
 
 }

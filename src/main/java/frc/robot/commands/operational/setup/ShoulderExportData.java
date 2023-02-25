@@ -1,9 +1,10 @@
-package frc.robot.commands.operational.util;
+package frc.robot.commands.operational.setup;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.moving.ArmSubsystem.DumpMode;
 
-public class ArmExportData extends CommandBase {
+public class ShoulderExportData extends CommandBase {
     /**
      * Creates a new DriveAdjustModuleZeroPoint.
      * 
@@ -13,7 +14,7 @@ public class ArmExportData extends CommandBase {
      * The later is done by the Command 
      * DriveResetAllModulePositionsToZero 
      */ 
-    public ArmExportData() {
+    public ShoulderExportData() {
       addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -26,7 +27,7 @@ public class ArmExportData extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.toggleDumping();
+        RobotContainer.armSubsystem.toggleDumping(DumpMode.SHOULDER);
     }
   
     // Called once the command ends or is interrupted.
@@ -37,7 +38,7 @@ public class ArmExportData extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return true;
+        return false;
     }
   
     // Returns true when the command should end.

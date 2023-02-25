@@ -1,54 +1,32 @@
 package frc.robot.subsystems.moving;
 
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ClawSubsystem extends SubsystemBase {
-
-    private final Solenoid clawSolenoid;
-
-    private boolean open;
-
-    public static ClawSubsystem INSTANCE;
-    public ClawSubsystem() {
-        INSTANCE = this;
-
-        clawSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-        open = false;
-    }
-  
-
-    public CommandBase exampleMethodCommand() {
-      // Inline construction of command goes here.
-      // Subsystem::RunOnce implicitly requires `this` subsystem.
-      return runOnce(
-          () -> {
-            /* one-time action goes here */
-          });
-    }
-
-    public boolean exampleCondition() {
-      return false;
-    }
-  
-    @Override
-    public void periodic() {
-
-    }
+  private final TalonSRX clawMotor = new TalonSRX(Constants.ARM_CLAW_ID);
+  private final DigitalInput clawMinSwitch = new DigitalInput(Constants.CLAW_MIN_LIMIT);
+  private final DigitalInput clawMaxSwitch = new DigitalInput(Constants.CLAW_MAX_LIMIT);
 
 
-    public static void toggleSolenoid() {
-        INSTANCE.clawSolenoid.set(!INSTANCE.clawSolenoid.get());
-        INSTANCE.open = !INSTANCE.open;
-    }
+  public static ClawSubsystem INSTANCE;
+  public ClawSubsystem() {
+      INSTANCE = this;
+  }
 
-    public static boolean isOpen() {
-        return INSTANCE.open;
-    }
+  public boolean isClawInRange() {
+    return !(clawMinSwitch.get() || clawMaxSwitch.get());
+  }
 
-    public Solenoid getClawSolenoid() {
-        return INSTANCE.clawSolenoid;
-    }
+  @Override
+  public void periodic() {
+
+  }
+
+  public TalonSRX getClawMotor() {
+    return this.clawMotor;
+  }
 }

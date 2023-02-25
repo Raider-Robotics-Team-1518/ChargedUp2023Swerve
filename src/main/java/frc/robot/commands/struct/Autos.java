@@ -4,16 +4,11 @@
 
 package frc.robot.commands.struct;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.base.ExampleSubsystem;
-
 public final class Autos {
-  /** Example static factory for an autonomous command. */
+  /* Example static factory for an autonomous command.
   public static CommandBase exampleAuto(ExampleSubsystem subsystem) {
-    return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
-  }
+    return Commands.sequence(subsystem.exampleMethodCommand()/*, command2, command3, command4, .....);
+  } */
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

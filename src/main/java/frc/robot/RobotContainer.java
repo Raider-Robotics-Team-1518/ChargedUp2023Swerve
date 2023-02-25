@@ -14,13 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import frc.robot.commands.drive.DriveFieldRelative;
 import frc.robot.commands.drive.DriveFieldRelativeAdvanced;
 import frc.robot.commands.drive.DriveRobotCentric;
@@ -30,14 +27,19 @@ import frc.robot.commands.drive.util.DriveAllModulesPositionOnly;
 import frc.robot.commands.drive.util.DriveOneModule;
 import frc.robot.commands.drive.util.DriveResetAllModulePositionsToZero;
 import frc.robot.commands.drive.util.DriveResetGyroToZero;
-import frc.robot.commands.drive.util.DriveSetGyro;
-import frc.robot.commands.drive.util.DriveTuneDriveMotorPID;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
-import frc.robot.commands.operational.util.ArmExportData;
-import frc.robot.commands.operational.util.ArmResetEncoder;
-import frc.robot.commands.operational.util.ArmTurnToOffset;
+import frc.robot.commands.operational.claw.ClawMove;
+import frc.robot.commands.operational.claw.ClawStop;
+import frc.robot.commands.operational.setup.ShoulderExportData;
+import frc.robot.commands.operational.setup.ShoulderSetZero;
+import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
+import frc.robot.commands.operational.telescope.TelescopeMove;
+import frc.robot.commands.operational.telescope.TelescopeStop;
+import frc.robot.commands.operational.wrist.WristMove;
+import frc.robot.commands.operational.wrist.WristStop;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
+import frc.robot.subsystems.moving.ClawSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -93,6 +95,7 @@ public class RobotContainer {
   //The robot's subsystems are instantiated here
   public static SwerveDrive swerveDrive;
   public static ArmSubsystem armSubsystem;
+  public static ClawSubsystem clawSubsystem;
 
   //The sendable chooser for autonomous is constructed here
   public static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
@@ -123,8 +126,8 @@ public class RobotContainer {
     SmartDashboard.putData("Drive Module 2", new DriveOneModule(2));//For setup of swerve
     SmartDashboard.putData("Drive Module 3", new DriveOneModule(3));//For setup of swerve
     SmartDashboard.putData(new DriveAllModulesPositionOnly()); // For setup of Swerve
-    SmartDashboard.putData(new ArmExportData()); // For setup of Arm
-    SmartDashboard.putData(new ArmResetEncoder()); // For setup of Arm
+    SmartDashboard.putData(new ShoulderExportData()); // For setup of Arm
+    SmartDashboard.putData(new ShoulderSetZero()); // For setup of Arm
     SmartDashboard.putData(new DriveStopAllModules());//For setup of swerve
     SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));//for testing turn to angle function
     
@@ -140,20 +143,26 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* ==================== DRIVER BUTTONS ==================== */
     driverLB.onTrue(new DriveResetGyroToZero());
-    driverA.onTrue(new ArmTurnToOffset(2.5));
-    driverB.onTrue(new ArmTurnToOffset(-2.5));
+    driverA.whileTrue(new ShoulderMoveOffset(0.5));
+    driverB.whileTrue(new ShoulderMoveOffset(-0.5));
 
-    driverY.whileTrue(armSubsystem.telescopeExtend());
-    driverY.onFalse(armSubsystem.stopTelescope());
-    driverX.whileTrue(armSubsystem.telescopeRetract());
-    driverX.onFalse(armSubsystem.stopTelescope());
-    //driverX.onTrue(new InstantCommand(() -> armSubsystem.telescopeRetract()));
-    //driverX.onFalse(new InstantCommand(() -> armSubsystem.stopTelescope()));
-
-    driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
+    driverStart.toggleOnTrue(new DriveFieldRelative(false));
+    driverBack.toggleOnTrue(new DriveFieldRelativeAdvanced(false));
+    //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
     /* =================== CODRIVER BUTTONS =================== */
+
+    coDriverA.whileTrue(new ShoulderMoveOffset(0.5));
+    coDriverB.whileTrue(new ShoulderMoveOffset(-0.5));
+
+    coDriverX.whileTrue(new TelescopeMove(0.25d)).onFalse(new TelescopeStop());
+    coDriverY.whileTrue(new TelescopeMove(-0.25d)).onFalse(new TelescopeStop());
     
+    coDriverDUp.whileTrue(new WristMove(0.25d)).onFalse(new WristStop());
+    coDriverDDown.whileTrue(new WristMove(-0.25d)).onFalse(new WristStop());
+
+    coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
+    coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
   }
 
 

@@ -1,10 +1,12 @@
-package frc.robot.commands.operational.util;
+package frc.robot.commands.operational.wrist;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class ArmResetEncoder extends CommandBase {
-    public ArmResetEncoder() {
+public class WristMove extends CommandBase {
+    double speed = 0.25d;
+    public WristMove(double speed) {
+        this.speed = speed;
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -14,7 +16,9 @@ public class ArmResetEncoder extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.resetArmAbsolutePosition();
+        if(RobotContainer.armSubsystem.isTelescopeInRange()) {
+            RobotContainer.armSubsystem.getTelescopeMotor().set(speed);
+        }
     }
   
     @Override
@@ -23,11 +27,11 @@ public class ArmResetEncoder extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return true;
+        return false;
     }
   
     @Override
     public boolean isFinished() {
         return false;
     }
-  }
+}

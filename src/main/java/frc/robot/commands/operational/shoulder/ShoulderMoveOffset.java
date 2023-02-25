@@ -1,11 +1,11 @@
-package frc.robot.commands.operational.util;
+package frc.robot.commands.operational.shoulder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class ArmTurnToOffset extends CommandBase {
+public class ShoulderMoveOffset extends CommandBase {
     double opp = 0;
-    public ArmTurnToOffset(double offset) {
+    public ShoulderMoveOffset(double offset) {
         this.opp = offset;
         addRequirements(RobotContainer.armSubsystem);
     }
@@ -18,8 +18,7 @@ public class ArmTurnToOffset extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.armPidController.setSetpoint(RobotContainer.armSubsystem.desiredPoint+opp);
-        RobotContainer.armSubsystem.desiredPoint = RobotContainer.armSubsystem.desiredPoint + opp;
+        RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.firstShoulderPoint+opp);
     }
   
     // Called once the command ends or is interrupted.
@@ -29,13 +28,13 @@ public class ArmTurnToOffset extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return true;
+        return false;
     }
   
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+        return RobotContainer.armSubsystem.shoulderPidController.atSetpoint();
     }
   }
 

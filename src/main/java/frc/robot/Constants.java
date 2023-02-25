@@ -20,15 +20,26 @@ public final class Constants {
      */
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
     public static final int ARM_WRIST_ID = -2; // Neo 550
-    public static final int ARM_TELESCOPE_ID = 31; // Winching motor
+    public static final int ARM_TELESCOPE_ID = 31; // Neo 550
+    public static final int ARM_CLAW_ID = 69; // HD Hex Motor
+
+    public static final int CLAW_MAX_LIMIT = 400;
+    public static final int CLAW_MIN_LIMIT = 400;
 
     /*
      * Non-Swerve PID
      */
+     // Shoulder PID
+     public static final double ARM_SHOULDER_P = 0.05;
+     public static final double ARM_SHOULDER_I = 0.00;
+     public static final double ARM_SHOULDER_D = 0.0005;
 
-     public static final double ARM_MOVE_P = 0.05;
-     public static final double ARM_MOVE_I = 0.00;
-     public static final double ARM_MOVE_D = 0.0005;
+     // Arm PID
+     public static final double ARM_WRIST_P = 0.05;
+     public static final double ARM_WRIST_I = 0.00;
+     public static final double ARM_WRIST_D = 0.0005;
+
+
 
      /*
       * Greater Rochester Robotics
