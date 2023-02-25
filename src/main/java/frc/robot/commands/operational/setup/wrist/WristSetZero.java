@@ -1,10 +1,10 @@
-package frc.robot.commands.operational.setup;
+package frc.robot.commands.operational.setup.wrist;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class ShoulderSetHighestPoint extends CommandBase {
-    public ShoulderSetHighestPoint() {
+public class WristSetZero extends CommandBase {
+    public WristSetZero() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -14,7 +14,7 @@ public class ShoulderSetHighestPoint extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.setShoulderMaxPos(RobotContainer.armSubsystem.getShoulderPosition());
+        RobotContainer.armSubsystem.resetWristPosition();
     }
   
     @Override
@@ -31,3 +31,4 @@ public class ShoulderSetHighestPoint extends CommandBase {
         return false;
     }
 }
+

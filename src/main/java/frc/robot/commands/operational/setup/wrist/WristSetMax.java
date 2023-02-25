@@ -1,12 +1,12 @@
-package frc.robot.commands.operational.wrist;
+package frc.robot.commands.operational.setup.wrist;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class WristMove extends CommandBase {
-    double speed = 0.25d;
-    public WristMove(double speed) {
-        this.speed = speed;
+public class WristSetMax extends CommandBase {
+    public WristSetMax() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -16,9 +16,7 @@ public class WristMove extends CommandBase {
   
     @Override
     public void execute() {
-        if(RobotContainer.armSubsystem.isWristInRange()) {
-            RobotContainer.armSubsystem.getWristMotor().set(speed);
-        }
+        Preferences.setDouble(Constants.WRIST_MAX_POS, RobotContainer.armSubsystem.getWristPosition());
     }
   
     @Override
@@ -27,7 +25,7 @@ public class WristMove extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return false;
+        return true;
     }
   
     @Override

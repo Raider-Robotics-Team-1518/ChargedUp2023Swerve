@@ -18,13 +18,37 @@ public final class Constants {
     /*
      * Raider Robotics 1518
      */
+
+    public static boolean setupState = false;
+
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
+    public static final double ARM_SHOULDER_LOWERWITCH_DEG = 25d; // The amount of degrees offset from 0 degrees to lower switch (if the arm were physically able to rotate down fully)
+    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 155d; // The amount of degrees offset from 0 degrees to upper switch (if the arm were physically able to rotate down fully)
+
     public static final int ARM_WRIST_ID = -2; // Neo 550
+
     public static final int ARM_TELESCOPE_ID = 31; // Neo 550
+
     public static final int ARM_CLAW_ID = 69; // HD Hex Motor
 
-    public static final int CLAW_MAX_LIMIT = 400;
-    public static final int CLAW_MIN_LIMIT = 400;
+    /*
+     * Preference Names
+     */
+
+     /* Shoulder */
+     public static final String SHOULDER_IDLE_ANGLE = "shoulderIdleAngle";
+     public static final String SHOULDER_MAX_POS = "shoulderMaxPos";
+     public static final String SHOULDER_MIN_POS = "shoulderMinPos";
+     public static final String SHOULDER_LEVEL_POS = "shoulderLevelPos";
+
+     /* Wrist */
+     public static final String WRIST_IDLE_ANGLE = "wristIdleAngle";
+     public static final String WRIST_MAX_POS = "wristMaxPos";
+     public static final String WRIST_MIN_POS = "wristMinPos";
+
+     /* Telescope */
+     public static final String TELESCOPE_MAX_POS = "telescopeMaxPos";
+     public static final String TELESCOPE_MIN_POS = "telescopeMinPos";
 
     /*
      * Non-Swerve PID

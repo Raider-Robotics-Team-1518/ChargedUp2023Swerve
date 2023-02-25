@@ -18,7 +18,7 @@ public class ShoulderMoveOffset extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.firstShoulderPoint+opp);
+        RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.shoulderPidController.getSetpoint()+opp);
     }
   
     // Called once the command ends or is interrupted.

@@ -30,8 +30,17 @@ import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
-import frc.robot.commands.operational.setup.ShoulderExportData;
-import frc.robot.commands.operational.setup.ShoulderSetZero;
+import frc.robot.commands.operational.setup.shoulder.ShoulderExportData;
+import frc.robot.commands.operational.setup.shoulder.ShoulderSetIdle;
+import frc.robot.commands.operational.setup.shoulder.ShoulderSetMaxMin;
+import frc.robot.commands.operational.setup.shoulder.ShoulderSetZero;
+import frc.robot.commands.operational.setup.telescope.TelescopeSetMax;
+import frc.robot.commands.operational.setup.telescope.TelescopeSetMin;
+import frc.robot.commands.operational.setup.wrist.WristExportData;
+import frc.robot.commands.operational.setup.wrist.WristSetIdle;
+import frc.robot.commands.operational.setup.wrist.WristSetMax;
+import frc.robot.commands.operational.setup.wrist.WristSetMin;
+import frc.robot.commands.operational.setup.wrist.WristToggleLock;
 import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
 import frc.robot.commands.operational.telescope.TelescopeMove;
 import frc.robot.commands.operational.telescope.TelescopeStop;
@@ -97,8 +106,13 @@ public class RobotContainer {
   public static ArmSubsystem armSubsystem;
   public static ClawSubsystem clawSubsystem;
 
-  //The sendable chooser for autonomous is constructed here
+  /* Autonomous Command Chooser */
   public static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
+  /* Setup Command Choosers */
+  public static SendableChooser<Command> setupShoulderChooser = new SendableChooser<Command>();
+  public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>();
+  public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -115,6 +129,7 @@ public class RobotContainer {
     
     //Add all autos to the auto selector
     configureAutoModes();
+    configureSetupModes();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -152,14 +167,16 @@ public class RobotContainer {
 
     /* =================== CODRIVER BUTTONS =================== */
 
-    coDriverA.whileTrue(new ShoulderMoveOffset(0.5));
-    coDriverB.whileTrue(new ShoulderMoveOffset(-0.5));
+    coDriverA.whileTrue(new ShoulderMoveOffset(0.75));
+    coDriverB.whileTrue(new ShoulderMoveOffset(-0.75));
 
     coDriverX.whileTrue(new TelescopeMove(0.25d)).onFalse(new TelescopeStop());
     coDriverY.whileTrue(new TelescopeMove(-0.25d)).onFalse(new TelescopeStop());
     
     coDriverDUp.whileTrue(new WristMove(0.25d)).onFalse(new WristStop());
     coDriverDDown.whileTrue(new WristMove(-0.25d)).onFalse(new WristStop());
+
+    coDriverBack.toggleOnTrue(new WristToggleLock());
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
     coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
@@ -178,6 +195,29 @@ public class RobotContainer {
 
 
     SmartDashboard.putData(RobotContainer.autoChooser);
+  }
+
+  private void configureSetupModes() {
+
+    /* Shoulder */
+    setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());
+    setupShoulderChooser.addOption("Export PID Data", new ShoulderExportData());
+    setupShoulderChooser.addOption("Set Idle Pos", new ShoulderSetIdle());
+    setupShoulderChooser.addOption("Set Level Pos", new ShoulderSetZero());
+    setupShoulderChooser.setDefaultOption("None", new WaitCommand(1));
+
+    /* Wrist */
+    setupWristChooser.addOption("Set Max", new WristSetMax());
+    setupWristChooser.addOption("Set Min", new WristSetMin());
+    setupWristChooser.addOption("Set Idle Pos", new WristSetIdle());
+    setupWristChooser.addOption("Export PID Data", new WristExportData());
+    setupWristChooser.setDefaultOption("None", new WaitCommand(1));
+
+
+    /* Telescope */
+    setupTelescopeChooser.addOption("Set Min (Retracted)", new TelescopeSetMin());
+    setupTelescopeChooser.addOption("Set Max (Extended)", new TelescopeSetMax());
+    setupTelescopeChooser.setDefaultOption("None", new WaitCommand(1));
   }
 
   

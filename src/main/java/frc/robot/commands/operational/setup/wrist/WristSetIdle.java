@@ -1,10 +1,12 @@
-package frc.robot.commands.operational.setup;
+package frc.robot.commands.operational.setup.wrist;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class ShoulderSetZero extends CommandBase {
-    public ShoulderSetZero() {
+public class WristSetIdle extends CommandBase {
+    public WristSetIdle() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -14,7 +16,7 @@ public class ShoulderSetZero extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.resetShoulderPosition();
+        Preferences.setDouble(Constants.WRIST_IDLE_ANGLE, RobotContainer.armSubsystem.getWristAngle());
     }
   
     @Override
