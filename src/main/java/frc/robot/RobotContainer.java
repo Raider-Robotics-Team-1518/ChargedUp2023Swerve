@@ -6,7 +6,6 @@ package frc.robot;
 
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -30,16 +29,17 @@ import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
+import frc.robot.commands.operational.setup.SetupToggle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderExportData;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetIdle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetMaxMin;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetZero;
 import frc.robot.commands.operational.setup.telescope.TelescopeSetMax;
 import frc.robot.commands.operational.setup.telescope.TelescopeSetMin;
+import frc.robot.commands.operational.setup.telescope.TelescopeSetZero;
 import frc.robot.commands.operational.setup.wrist.WristExportData;
 import frc.robot.commands.operational.setup.wrist.WristSetIdle;
-import frc.robot.commands.operational.setup.wrist.WristSetMax;
-import frc.robot.commands.operational.setup.wrist.WristSetMin;
+import frc.robot.commands.operational.setup.wrist.WristSetMaxMin;
 import frc.robot.commands.operational.setup.wrist.WristToggleLock;
 import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
 import frc.robot.commands.operational.telescope.TelescopeMove;
@@ -106,55 +106,29 @@ public class RobotContainer {
   public static ArmSubsystem armSubsystem;
   public static ClawSubsystem clawSubsystem;
 
-  /* Autonomous Command Chooser */
-  public static SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+  /* Command Choosers */
+  public static SendableChooser<Command> autoChooser = new SendableChooser<Command>(); // Autonomous
+  public static SendableChooser<Command> setupSwerveChooser = new SendableChooser<Command>(); // Swerve Setup
+  public static SendableChooser<Command> setupShoulderChooser = new SendableChooser<Command>(); // Shoulder Setup
+  public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>(); // Wrist Setup
+  public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>(); // Telescope Setup
 
-  /* Setup Command Choosers */
-  public static SendableChooser<Command> setupShoulderChooser = new SendableChooser<Command>();
-  public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>();
-  public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>();
 
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
-    //create(construct) subsystems
     swerveDrive = new SwerveDrive();
     swerveDrive.setDefaultCommand(new DriveRobotCentric(false));
-    // swerveDrive.setDefaultCommand(new DriveFieldRelative(false));
-    // swerveDrive.setDefaultCommand(new DriveFieldRelativeAdvanced(false));
 
     armSubsystem = new ArmSubsystem();
-
     
-    //Add all autos to the auto selector
+    configureSwerveSetup();
     configureAutoModes();
     configureSetupModes();
-
-    // Configure the button bindings
     configureButtonBindings();
-    //add some commands to dashboard for testing/configuring
-    SmartDashboard.putData(new DriveAdjustModulesManually());//For setup of swerve
-    SmartDashboard.putData(new DriveResetAllModulePositionsToZero());//For setup of swerve
-    SmartDashboard.putData("Drive Module 0", new DriveOneModule(0));//For setup of swerve
-    SmartDashboard.putData("Drive Module 1", new DriveOneModule(1));//For setup of swerve
-    SmartDashboard.putData("Drive Module 2", new DriveOneModule(2));//For setup of swerve
-    SmartDashboard.putData("Drive Module 3", new DriveOneModule(3));//For setup of swerve
-    SmartDashboard.putData(new DriveAllModulesPositionOnly()); // For setup of Swerve
-    SmartDashboard.putData(new ShoulderExportData()); // For setup of Arm
-    SmartDashboard.putData(new ShoulderSetZero()); // For setup of Arm
-    SmartDashboard.putData(new DriveStopAllModules());//For setup of swerve
-    SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));//for testing turn to angle function
     
     CameraServer.startAutomaticCapture();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
+
   private void configureButtonBindings() {
     /* ==================== DRIVER BUTTONS ==================== */
     driverLB.onTrue(new DriveResetGyroToZero());
@@ -197,7 +171,21 @@ public class RobotContainer {
     SmartDashboard.putData(RobotContainer.autoChooser);
   }
 
+  private void configureSwerveSetup() {
+    setupSwerveChooser.addOption("D Physical", new DriveAdjustModulesManually());
+    setupSwerveChooser.addOption("D To Zero", new DriveResetAllModulePositionsToZero());
+    setupSwerveChooser.addOption("D Module 0", new DriveOneModule(0));
+    setupSwerveChooser.addOption("D Module 1", new DriveOneModule(1));
+    setupSwerveChooser.addOption("D Module 2", new DriveOneModule(2));
+    setupSwerveChooser.addOption("D Module 3", new DriveOneModule(3));
+    setupSwerveChooser.addOption("D Pos Only", new DriveAllModulesPositionOnly());
+    setupSwerveChooser.addOption("D Stop", new DriveStopAllModules());
+    setupSwerveChooser.addOption("Turn to Angle", new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
+    SmartDashboard.putData(setupSwerveChooser);
+  }
+
   private void configureSetupModes() {
+    SmartDashboard.putData(new SetupToggle());
 
     /* Shoulder */
     setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());
@@ -205,19 +193,23 @@ public class RobotContainer {
     setupShoulderChooser.addOption("Set Idle Pos", new ShoulderSetIdle());
     setupShoulderChooser.addOption("Set Level Pos", new ShoulderSetZero());
     setupShoulderChooser.setDefaultOption("None", new WaitCommand(1));
+    SmartDashboard.putData(setupShoulderChooser);
 
     /* Wrist */
-    setupWristChooser.addOption("Set Max", new WristSetMax());
-    setupWristChooser.addOption("Set Min", new WristSetMin());
+    setupWristChooser.addOption("Find Max/Mins", new WristSetMaxMin());
     setupWristChooser.addOption("Set Idle Pos", new WristSetIdle());
     setupWristChooser.addOption("Export PID Data", new WristExportData());
     setupWristChooser.setDefaultOption("None", new WaitCommand(1));
+    SmartDashboard.putData(setupWristChooser);
 
 
     /* Telescope */
     setupTelescopeChooser.addOption("Set Min (Retracted)", new TelescopeSetMin());
+    setupTelescopeChooser.addOption("Zero", new TelescopeSetZero());
     setupTelescopeChooser.addOption("Set Max (Extended)", new TelescopeSetMax());
     setupTelescopeChooser.setDefaultOption("None", new WaitCommand(1));
+    SmartDashboard.putData(setupTelescopeChooser);
+
   }
 
   

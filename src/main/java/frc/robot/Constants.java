@@ -25,7 +25,7 @@ public final class Constants {
     public static final double ARM_SHOULDER_LOWERWITCH_DEG = 25d; // The amount of degrees offset from 0 degrees to lower switch (if the arm were physically able to rotate down fully)
     public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 155d; // The amount of degrees offset from 0 degrees to upper switch (if the arm were physically able to rotate down fully)
 
-    public static final int ARM_WRIST_ID = -2; // Neo 550
+    public static final int ARM_WRIST_ID = 32; // Neo 550
 
     public static final int ARM_TELESCOPE_ID = 31; // Neo 550
 

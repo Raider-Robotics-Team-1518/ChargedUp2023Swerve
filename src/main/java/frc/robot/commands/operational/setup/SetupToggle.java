@@ -1,12 +1,11 @@
-package frc.robot.commands.operational.setup.wrist;
+package frc.robot.commands.operational.setup;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class WristSetMax extends CommandBase {
-    public WristSetMax() {
+public class SetupToggle extends CommandBase {
+    public SetupToggle() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -16,7 +15,8 @@ public class WristSetMax extends CommandBase {
   
     @Override
     public void execute() {
-        Preferences.setDouble(Constants.WRIST_MAX_POS, RobotContainer.armSubsystem.getWristPosition());
+        if(Constants.setupState) Constants.setupState = false;
+        if(!Constants.setupState) Constants.setupState = true;
     }
   
     @Override
@@ -33,3 +33,4 @@ public class WristSetMax extends CommandBase {
         return false;
     }
 }
+

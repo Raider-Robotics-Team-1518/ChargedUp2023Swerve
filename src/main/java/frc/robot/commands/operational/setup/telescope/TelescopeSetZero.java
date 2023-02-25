@@ -1,12 +1,10 @@
-package frc.robot.commands.operational.setup.wrist;
+package frc.robot.commands.operational.setup.telescope;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class WristSetMin extends CommandBase {
-    public WristSetMin() {
+public class TelescopeSetZero extends CommandBase {
+    public TelescopeSetZero() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -16,7 +14,7 @@ public class WristSetMin extends CommandBase {
   
     @Override
     public void execute() {
-        Preferences.setDouble(Constants.WRIST_MIN_POS, RobotContainer.armSubsystem.getWristPosition());
+        RobotContainer.armSubsystem.resetTelescopePosition();
     }
   
     @Override

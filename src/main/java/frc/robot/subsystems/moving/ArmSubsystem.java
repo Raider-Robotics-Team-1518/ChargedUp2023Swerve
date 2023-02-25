@@ -37,10 +37,7 @@ public class ArmSubsystem extends SubsystemBase {
      */
 
     /*
-     * Steps:
-     * 1. Set Shoulder Level position using ShoulderSetZero
-     * 2. Set Shoulder Maximum and Minimum lists using ShoulderSetMaxMin
-     * 3. 
+     *  
      */
 
     // Shoulder
@@ -58,8 +55,8 @@ public class ArmSubsystem extends SubsystemBase {
     public boolean lockedWrist = true;
 
     // Telescope
-    public double fullyWoundTelescopePositon = Preferences.getDouble(Constants.TELESCOPE_MIN_POS, 0d); // Telescope fully retracted
-    public double fullyUnwoundTelescopePositon = Preferences.getDouble(Constants.TELESCOPE_MAX_POS, 50d); // Telescope fully extended
+    public double minTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MIN_POS, 0d); // Telescope fully retracted
+    public double maxTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MAX_POS, 50d); // Telescope fully extended
 
 
     // Objects specific to the dump process
@@ -74,15 +71,8 @@ public class ArmSubsystem extends SubsystemBase {
     public static ArmSubsystem INSTANCE;
     public ArmSubsystem() {
         INSTANCE = this;
-        try { 
-            new File("/home/lvuser/1518dump").mkdir();
-            new File(shoulderDumpFile).createNewFile();
-            new File(wristDumpFile).createNewFile();
-            writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
-        } catch(Exception e){ 
-            e.printStackTrace(); 
-        }
-        start = -1L;
+        
+        setupDumping();
 
         shoulderMotor.setIdleMode(IdleMode.kBrake);
 
@@ -99,7 +89,6 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("ShoulderEncVal", getShoulderPosition());
-        SmartDashboard.putNumber("ShoulderDesiredPos", shoulderPidController.getSetpoint());
         SmartDashboard.putNumber("WristEncVal", getWristPosition());
 
         // PID Data dumping
@@ -128,6 +117,19 @@ public class ArmSubsystem extends SubsystemBase {
         //fixateShoulder(); fixate just shoulder motor
         //fixateWrist(); fixate just wrist motor
         fixateArm(true); // fixate both
+    }
+
+    public void setupDumping() {
+        try { 
+            new File("/home/lvuser/1518dump").mkdir();
+            new File(shoulderDumpFile).createNewFile();
+            new File(wristDumpFile).createNewFile();
+            writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
+        } catch(Exception e){ 
+            e.printStackTrace(); 
+        }
+        start = -1L;
+
     }
 
     public void setWristTargetPos(double target, boolean angle) {
@@ -178,7 +180,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public boolean isTelescopeInRange() {
         double telescopePos = telescopeMotor.getEncoder().getPosition();
-        return ((telescopePos < fullyWoundTelescopePositon) && (telescopePos > fullyUnwoundTelescopePositon));
+        return ((telescopePos < maxTelescopePos) && (telescopePos > minTelescopePos));
     }
 
     public double getWristAngle() {
@@ -233,6 +235,10 @@ public class ArmSubsystem extends SubsystemBase {
         INSTANCE.maxShoulderPos = highestPosition;
     }
 
+    public void resetTelescopePosition() {
+        telescopeMotor.getEncoder().setPosition(0.0);
+    }
+
     public void resetShoulderPosition() {
         shoulderMotor.getEncoder().setPosition(0.0);
     }
@@ -242,6 +248,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void doShoulderDump() throws IOException {
+        writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
             shoulderMotor.set(0.1);
@@ -272,6 +279,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void doWristDump() throws IOException {
+        writer = new BufferedWriter(new FileWriter(wristDumpFile)); 
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
             wristMotor.set(0.2);

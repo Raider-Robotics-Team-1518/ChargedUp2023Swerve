@@ -1,5 +1,6 @@
 package frc.robot.subsystems.moving;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -11,6 +12,7 @@ public class ClawSubsystem extends SubsystemBase {
   public static ClawSubsystem INSTANCE;
   public ClawSubsystem() {
       INSTANCE = this;
+      clawMotor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
