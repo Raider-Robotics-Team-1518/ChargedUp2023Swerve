@@ -131,7 +131,7 @@ public final class Constants {
 
     public static final int FRONT_LEFT_MOVE_MOTOR = 1;//drive module 0
     public static final int FRONT_LEFT_ROTATE_MOTOR = 2;//drive module 0
-    public static final int FRONT_LEFT_ROTATE_SENSOR = 11;//drive module 0
+    public static final int FRONT_LEFT_ROTATE_SENSOR = 15;//drive module 0
 
     public static final int REAR_LEFT_MOVE_MOTOR = 3;//drive module 1
     public static final int REAR_LEFT_ROTATE_MOTOR = 4;//drive module 1
