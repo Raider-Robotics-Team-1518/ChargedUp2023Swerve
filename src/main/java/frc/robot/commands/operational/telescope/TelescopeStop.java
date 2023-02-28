@@ -14,7 +14,7 @@ public class TelescopeStop extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.getTelescopeMotor().set(0.0d);
+        RobotContainer.armSubsystem.setTelescopeSpeed(0.0d);
     }
   
     @Override

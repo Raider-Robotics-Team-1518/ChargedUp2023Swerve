@@ -1,12 +1,11 @@
-package frc.robot.commands.operational.telescope;
+package frc.robot.commands.operational.setup.telescope;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 
-public class TelescopeMove extends CommandBase {
-    double speed = 0.25d;
-    public TelescopeMove(double speed) {
-        this.speed = speed;
+public class TelescopeSetup extends CommandBase {
+    public TelescopeSetup() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -16,9 +15,7 @@ public class TelescopeMove extends CommandBase {
   
     @Override
     public void execute() {
-        //if(RobotContainer.armSubsystem.isTelescopeInRange()) {
-            RobotContainer.armSubsystem.setTelescopeSpeed(speed);
-        //}
+        CommandScheduler.getInstance().schedule(RobotContainer.setupTelescopeChooser.getSelected());
     }
   
     @Override
@@ -27,7 +24,7 @@ public class TelescopeMove extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return false;
+        return true;
     }
   
     @Override

@@ -18,9 +18,7 @@ public class ClawMove extends CommandBase {
   
     @Override
     public void execute() {
-        if(RobotContainer.clawSubsystem.getClawMotor().isFwdLimitSwitchClosed() == 0 && RobotContainer.clawSubsystem.getClawMotor().isRevLimitSwitchClosed() == 0) {
-            RobotContainer.clawSubsystem.getClawMotor().set(ControlMode.PercentOutput, speed);
-        }
+        RobotContainer.clawSubsystem.getClawMotor().set(ControlMode.PercentOutput, speed);
     }
   
     @Override

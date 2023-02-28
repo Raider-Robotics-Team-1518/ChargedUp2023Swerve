@@ -16,6 +16,7 @@ public class TelescopeSetMin extends CommandBase {
   
     @Override
     public void execute() {
+        RobotContainer.armSubsystem.resetTelescopePosition();
         Preferences.setDouble(Constants.TELESCOPE_MIN_POS, RobotContainer.armSubsystem.getTelescopePosition());
     }
   

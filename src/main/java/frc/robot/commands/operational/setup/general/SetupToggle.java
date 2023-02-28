@@ -1,10 +1,11 @@
-package frc.robot.commands.operational.setup.telescope;
+package frc.robot.commands.operational.setup.general;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class TelescopeSetZero extends CommandBase {
-    public TelescopeSetZero() {
+public class SetupToggle extends CommandBase {
+    public SetupToggle() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -14,7 +15,7 @@ public class TelescopeSetZero extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.resetTelescopePosition();
+        Constants.setupState = !Constants.setupState;
     }
   
     @Override
@@ -31,3 +32,4 @@ public class TelescopeSetZero extends CommandBase {
         return false;
     }
 }
+

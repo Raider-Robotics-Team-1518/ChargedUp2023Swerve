@@ -1,10 +1,14 @@
 package frc.robot.commands.operational.setup.wrist;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class WristToggleLock extends CommandBase {
-    public WristToggleLock() {
+public class WristSetMin extends CommandBase {
+    private boolean found = false;
+
+    public WristSetMin() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -14,7 +18,9 @@ public class WristToggleLock extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.lockedWrist = !RobotContainer.armSubsystem.lockedWrist;
+        RobotContainer.armSubsystem.resetWristPosition();
+        Preferences.setDouble(Constants.WRIST_MIN_POS, RobotContainer.armSubsystem.getWristPosition());
+        found = true;
     }
   
     @Override
@@ -28,7 +34,7 @@ public class WristToggleLock extends CommandBase {
   
     @Override
     public boolean isFinished() {
-        return false;
+        return found;
     }
 }
 

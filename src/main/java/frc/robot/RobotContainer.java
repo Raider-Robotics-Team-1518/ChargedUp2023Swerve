@@ -6,6 +6,7 @@ package frc.robot;
 
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -13,39 +14,38 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.drive.DriveFieldRelative;
-import frc.robot.commands.drive.DriveFieldRelativeAdvanced;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveStopAllModules;
 import frc.robot.commands.drive.util.DriveAdjustModulesManually;
 import frc.robot.commands.drive.util.DriveAllModulesPositionOnly;
 import frc.robot.commands.drive.util.DriveOneModule;
 import frc.robot.commands.drive.util.DriveResetAllModulePositionsToZero;
-import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
-import frc.robot.commands.operational.setup.SetupToggle;
+import frc.robot.commands.operational.setup.general.SetArmBrake;
+import frc.robot.commands.operational.setup.general.SetArmCoast;
+import frc.robot.commands.operational.setup.general.SetupToggle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderExportData;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetIdle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetMaxMin;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetZero;
+import frc.robot.commands.operational.setup.shoulder.ShoulderSetup;
 import frc.robot.commands.operational.setup.telescope.TelescopeSetMax;
 import frc.robot.commands.operational.setup.telescope.TelescopeSetMin;
-import frc.robot.commands.operational.setup.telescope.TelescopeSetZero;
+import frc.robot.commands.operational.setup.telescope.TelescopeSetup;
 import frc.robot.commands.operational.setup.wrist.WristExportData;
 import frc.robot.commands.operational.setup.wrist.WristSetIdle;
-import frc.robot.commands.operational.setup.wrist.WristSetMaxMin;
-import frc.robot.commands.operational.setup.wrist.WristToggleLock;
-import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
+import frc.robot.commands.operational.setup.wrist.WristSetMax;
+import frc.robot.commands.operational.setup.wrist.WristSetMin;
+import frc.robot.commands.operational.setup.wrist.WristSetup;
 import frc.robot.commands.operational.telescope.TelescopeMove;
 import frc.robot.commands.operational.telescope.TelescopeStop;
-import frc.robot.commands.operational.wrist.WristMove;
-import frc.robot.commands.operational.wrist.WristStop;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 import frc.robot.subsystems.moving.ClawSubsystem;
@@ -115,14 +115,14 @@ public class RobotContainer {
 
 
   public RobotContainer() {
+    armSubsystem = new ArmSubsystem();
+    clawSubsystem = new ClawSubsystem();
     swerveDrive = new SwerveDrive();
     swerveDrive.setDefaultCommand(new DriveRobotCentric(false));
 
-    armSubsystem = new ArmSubsystem();
-    
     configureSwerveSetup();
-    configureAutoModes();
     configureSetupModes();
+    configureAutoModes();
     configureButtonBindings();
     
     CameraServer.startAutomaticCapture();
@@ -130,7 +130,8 @@ public class RobotContainer {
 
 
   private void configureButtonBindings() {
-    /* ==================== DRIVER BUTTONS ==================== */
+    /* ==================== DRIVER BUTTONS ==================== 
+
     driverLB.onTrue(new DriveResetGyroToZero());
     driverA.whileTrue(new ShoulderMoveOffset(0.5));
     driverB.whileTrue(new ShoulderMoveOffset(-0.5));
@@ -139,7 +140,7 @@ public class RobotContainer {
     driverBack.toggleOnTrue(new DriveFieldRelativeAdvanced(false));
     //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
-    /* =================== CODRIVER BUTTONS =================== */
+    /* =================== CODRIVER BUTTONS =================== 
 
     coDriverA.whileTrue(new ShoulderMoveOffset(0.75));
     coDriverB.whileTrue(new ShoulderMoveOffset(-0.75));
@@ -153,7 +154,15 @@ public class RobotContainer {
     coDriverBack.toggleOnTrue(new WristToggleLock());
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
-    coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
+    coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
+    driverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
+    driverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
+
+    driverX.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.5d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+    driverY.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-0.5d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+
+    //driverA.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR+0.001d));
+    //driverB.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR-0.001d));
   }
 
 
@@ -172,6 +181,18 @@ public class RobotContainer {
   }
 
   private void configureSwerveSetup() {
+    Preferences.remove(Constants.SHOULDER_IDLE_ANGLE);
+    Preferences.remove(Constants.SHOULDER_LEVEL_POS);
+    Preferences.remove(Constants.SHOULDER_MAX_POS);
+    Preferences.remove(Constants.SHOULDER_MIN_POS);
+    Preferences.remove(Constants.WRIST_IDLE_ANGLE);
+    Preferences.remove(Constants.WRIST_MAX_POS);
+    Preferences.remove(Constants.WRIST_MIN_POS);
+    Preferences.remove(Constants.TELESCOPE_MAX_POS);
+    Preferences.remove(Constants.TELESCOPE_MIN_POS);
+
+
+
     setupSwerveChooser.addOption("D Physical", new DriveAdjustModulesManually());
     setupSwerveChooser.addOption("D To Zero", new DriveResetAllModulePositionsToZero());
     setupSwerveChooser.addOption("D Module 0", new DriveOneModule(0));
@@ -185,28 +206,35 @@ public class RobotContainer {
   }
 
   private void configureSetupModes() {
+    /* General Setup Commands */
     SmartDashboard.putData(new SetupToggle());
+    SmartDashboard.putData(new ShoulderSetup());
+    SmartDashboard.putData(new TelescopeSetup());
+    SmartDashboard.putData(new WristSetup());
+    SmartDashboard.putData(new SetArmBrake());
+    SmartDashboard.putData(new SetArmCoast());
 
     /* Shoulder */
     setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());
-    setupShoulderChooser.addOption("Export PID Data", new ShoulderExportData());
+    setupShoulderChooser.addOption("Export Motion Data", new ShoulderExportData());
     setupShoulderChooser.addOption("Set Idle Pos", new ShoulderSetIdle());
     setupShoulderChooser.addOption("Set Level Pos", new ShoulderSetZero());
     setupShoulderChooser.setDefaultOption("None", new WaitCommand(1));
     SmartDashboard.putData(setupShoulderChooser);
 
     /* Wrist */
-    setupWristChooser.addOption("Find Max/Mins", new WristSetMaxMin());
+    // setupWristChooser.addOption("Find Max/Mins", new WristSetMaxMin()); // Read comment at top of class
+    setupWristChooser.addOption("Set Max (90 deg)", new WristSetMax());
     setupWristChooser.addOption("Set Idle Pos", new WristSetIdle());
-    setupWristChooser.addOption("Export PID Data", new WristExportData());
+    setupWristChooser.addOption("Set Min (Level)", new WristSetMin());
+    setupWristChooser.addOption("Export Motion Data", new WristExportData());
     setupWristChooser.setDefaultOption("None", new WaitCommand(1));
     SmartDashboard.putData(setupWristChooser);
 
 
     /* Telescope */
-    setupTelescopeChooser.addOption("Set Min (Retracted)", new TelescopeSetMin());
-    setupTelescopeChooser.addOption("Zero", new TelescopeSetZero());
-    setupTelescopeChooser.addOption("Set Max (Extended)", new TelescopeSetMax());
+    setupTelescopeChooser.addOption("Set Min (In)", new TelescopeSetMin());
+    setupTelescopeChooser.addOption("Set Max (Out)", new TelescopeSetMax());
     setupTelescopeChooser.setDefaultOption("None", new WaitCommand(1));
     SmartDashboard.putData(setupTelescopeChooser);
 

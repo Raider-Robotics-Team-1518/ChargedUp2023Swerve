@@ -1,12 +1,14 @@
-package frc.robot.commands.operational.telescope;
+package frc.robot.commands.operational.setup.wrist;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class TelescopeMove extends CommandBase {
-    double speed = 0.25d;
-    public TelescopeMove(double speed) {
-        this.speed = speed;
+public class WristSetMax extends CommandBase {
+    private boolean found = false;
+
+    public WristSetMax() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -16,9 +18,8 @@ public class TelescopeMove extends CommandBase {
   
     @Override
     public void execute() {
-        //if(RobotContainer.armSubsystem.isTelescopeInRange()) {
-            RobotContainer.armSubsystem.setTelescopeSpeed(speed);
-        //}
+        Preferences.setDouble(Constants.WRIST_MAX_POS, RobotContainer.armSubsystem.getWristPosition());
+        found = true;
     }
   
     @Override
@@ -27,11 +28,12 @@ public class TelescopeMove extends CommandBase {
 
     @Override
     public boolean runsWhenDisabled() {
-        return false;
+        return true;
     }
   
     @Override
     public boolean isFinished() {
-        return false;
+        return found;
     }
 }
+

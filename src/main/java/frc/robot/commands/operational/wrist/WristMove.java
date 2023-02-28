@@ -16,7 +16,7 @@ public class WristMove extends CommandBase {
   
     @Override
     public void execute() {
-        if(RobotContainer.armSubsystem.isWristInRange()) {
+        if(RobotContainer.armSubsystem.isWristInRange() && !RobotContainer.armSubsystem.lockedWrist) {
             RobotContainer.armSubsystem.getWristMotor().set(speed);
         }
     }

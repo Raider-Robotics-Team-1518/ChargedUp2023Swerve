@@ -8,9 +8,9 @@ import java.io.IOException;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,61 +20,49 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ArmSubsystem extends SubsystemBase {
-    // "shoulder" is the pivot point at the top of the tower, raises & lowers the arm
-    private final CANSparkMax shoulderMotor = new CANSparkMax(Constants.ARM_SHOULDER_ID, MotorType.kBrushless);
-    // "wrist" is the pivot point at the end of the arm, raises and lowers the claw
-    private final CANSparkMax wristMotor = new CANSparkMax(Constants.ARM_WRIST_ID, MotorType.kBrushless);
-    // "telescope" is the part of the arm that extends/retracts
-    private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
-
-    public final PIDController shoulderPidController = new PIDController(Constants.ARM_SHOULDER_P, Constants.ARM_SHOULDER_I, Constants.ARM_SHOULDER_D);
-    public final PIDController wristPidController = new PIDController(Constants.ARM_WRIST_P, Constants.ARM_WRIST_I, Constants.ARM_WRIST_D);
-
 
     /*
      * Moving Parts
      * !!!! IMPORTANT: SETUP of these VARIABLES using the designated SETUP COMMANDS is REQUIRED before BOT USAGE !!!!!
      */
 
-    /*
-     *  
-     */
-
     // Shoulder
-    public DigitalInput shoulderLowerSwitch = new DigitalInput(0);
-    public DigitalInput shoulderUpperSwitch = new DigitalInput(1);
+    private final CANSparkMax shoulderMotor = new CANSparkMax(Constants.ARM_SHOULDER_ID, MotorType.kBrushless);
+    public final PIDController shoulderPidController = new PIDController(Constants.ARM_SHOULDER_P, Constants.ARM_SHOULDER_I, Constants.ARM_SHOULDER_D);
     public double maxShoulderPos = Preferences.getDouble(Constants.SHOULDER_MAX_POS, 50d); // Arm is facing the ceiling (180 deg)
     public double horizontalShoulderPos = Preferences.getDouble(Constants.SHOULDER_LEVEL_POS, 0d); // 90 deg
     public double minShoulderPos = Preferences.getDouble(Constants.SHOULDER_MIN_POS, -50d); // As retracted as we can get without breaking electronics (unknown angle)
-    public double idleShoulderAngle = Preferences.getDouble(Constants.SHOULDER_IDLE_ANGLE, 145d); // (degrees)
+    public double idleShoulderAngle = Preferences.getDouble(Constants.SHOULDER_IDLE_ANGLE, 35d); // (degrees)
 
     // Wrist
-    public double maxWristPos = Preferences.getDouble(Constants.WRIST_MAX_POS, 50d); // 180 deg
-    public double minWristPos = Preferences.getDouble(Constants.WRIST_MIN_POS, -50d); // 0 deg
-    public double idleWristAngle = Preferences.getDouble(Constants.WRIST_IDLE_ANGLE, 180d); // (degrees)
+    private final CANSparkMax wristMotor = new CANSparkMax(Constants.ARM_WRIST_ID, MotorType.kBrushless);
+    public final PIDController wristPidController = new PIDController(Constants.ARM_WRIST_P, Constants.ARM_WRIST_I, Constants.ARM_WRIST_D);
+    public double maxWristPos = Preferences.getDouble(Constants.WRIST_MAX_POS, 50d); // 90 deg (Facing up)
+    public double minWristPos = Preferences.getDouble(Constants.WRIST_MIN_POS, -50d); // 0 deg (Level)
+    public double idleWristAngle = Preferences.getDouble(Constants.WRIST_IDLE_ANGLE, 90d); // (degrees)
     public boolean lockedWrist = true;
 
     // Telescope
+    private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
     public double minTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MIN_POS, 0d); // Telescope fully retracted
     public double maxTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MAX_POS, 50d); // Telescope fully extended
-
+    public double desiredTelescopeSpeed = 0.0d;
 
     // Objects specific to the dump process
     private boolean isDumping = false;
     private boolean doneDumping = false;
-    private DumpMode currentDumpMode = DumpMode.SHOULDER;
-    private String shoulderDumpFile = "/home/lvuser/1518dump/shoulder_pid_data.csv";
-    private String wristDumpFile = "/home/lvuser/1518dump/wirst_pid_data.csv";
-    private BufferedWriter writer;
+    private DumpMode currentDumpMode = DumpMode.WRIST;
+    public String shoulderDumpFile = "/home/lvuser/motion/shoulder_motion_data.csv";
+    public String wristDumpFile = "/home/lvuser/motion/wirst_motion_data.csv";
+    public BufferedWriter writer;
     private long start = -1L;
 
     public static ArmSubsystem INSTANCE;
     public ArmSubsystem() {
         INSTANCE = this;
-        
-        setupDumping();
 
-        shoulderMotor.setIdleMode(IdleMode.kBrake);
+        setupDumping();
+        setArmBrake();
 
         // shoulder pid setup
         setShoulderTargetPos(idleShoulderAngle, true);
@@ -83,13 +71,10 @@ public class ArmSubsystem extends SubsystemBase {
         // wrist pid setup
         setWristTargetPos(idleWristAngle, true);
         wristPidController.setTolerance(0.1);
-
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("ShoulderEncVal", getShoulderPosition());
-        SmartDashboard.putNumber("WristEncVal", getWristPosition());
 
         // PID Data dumping
         if(isDumping) {
@@ -112,16 +97,67 @@ public class ArmSubsystem extends SubsystemBase {
             }
         }
 
-        if(!DriverStation.isEnabled() || Constants.setupState) return;
-        /*!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!*/
+        // SetupState Dashboard Information
+        if(Constants.setupState) {
+            SmartDashboard.putBoolean("ShlderFwdLimit", getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed());
+            SmartDashboard.putBoolean("ShlderRevLimit", getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed());
+            SmartDashboard.putNumber("ShoulderEncoderPos", getShoulderPosition());
+            SmartDashboard.putNumber("ShoulderAngle", getShoulderAngle());
+            SmartDashboard.putNumber("WristEncoderPos", getWristPosition());
+            SmartDashboard.putNumber("WristAngle", getWristAngle());
+            SmartDashboard.putNumber("TelescopePos", getTelescopePosition());
+            return;
+        }
+
+        if(!DriverStation.isEnabled()) {
+            return;
+        }
+
+        telescopeArbitraryFF();
+
+        // debugging 
+        /*
+        if(!DriverStation.isEnabled()) return;
+        !!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
         //fixateShoulder(); fixate just shoulder motor
         //fixateWrist(); fixate just wrist motor
-        fixateArm(true); // fixate both
+        fixateArm(INSTANCE.lockedWrist); // fixate both
+        */
+    }
+
+    public void setArmCoast() {
+        shoulderMotor.setIdleMode(IdleMode.kCoast);
+        wristMotor.setIdleMode(IdleMode.kCoast);
+        telescopeMotor.setIdleMode(IdleMode.kBrake); // Should never have to leave brake mode for telescope
+    }
+
+    public void setArmBrake() {
+        shoulderMotor.setIdleMode(IdleMode.kBrake);
+        wristMotor.setIdleMode(IdleMode.kBrake);
+        telescopeMotor.setIdleMode(IdleMode.kBrake);
+    }
+
+    public void overcomeGravityTelescope() {
+        // basic equation assuming the cosine of the shoulder angle is porportionate to motor input speed against gravity (abitrary feed forward)
+
+    }
+
+    public void setTelescopeSpeed(double speed) {
+        this.desiredTelescopeSpeed = speed;
+    }
+
+    public void telescopeArbitraryFF() {
+        /*if(this.desiredTelescopeSpeed != 0.0d) {
+            telescopeMotor.set(this.desiredTelescopeSpeed);
+            return;
+        }
+        telescopeMotor.set((this.desiredTelescopeSpeed + (Constants.ARM_TELESCOPE_GRAVITY_FACTOR * Math.cos(getShoulderAngle()))));*/
+        telescopeMotor.set(this.desiredTelescopeSpeed);
     }
 
     public void setupDumping() {
         try { 
-            new File("/home/lvuser/1518dump").mkdir();
+            new File("/home/lvuser/motion").mkdir();
             new File(shoulderDumpFile).createNewFile();
             new File(wristDumpFile).createNewFile();
             writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
@@ -134,7 +170,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setWristTargetPos(double target, boolean angle) {
         double targetPos = target;
-        if(angle) targetPos = ((target/180)*maxWristPos);
+        if(angle) targetPos = ((target/90)*maxWristPos);
         wristPidController.setSetpoint(targetPos);
     }
 
@@ -248,7 +284,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void doShoulderDump() throws IOException {
-        writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
             shoulderMotor.set(0.1);
@@ -279,7 +314,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void doWristDump() throws IOException {
-        writer = new BufferedWriter(new FileWriter(wristDumpFile)); 
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
             wristMotor.set(0.2);

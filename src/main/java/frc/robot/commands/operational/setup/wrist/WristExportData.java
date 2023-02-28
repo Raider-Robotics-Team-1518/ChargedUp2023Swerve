@@ -1,5 +1,9 @@
 package frc.robot.commands.operational.setup.wrist;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.moving.ArmSubsystem.DumpMode;
@@ -18,6 +22,11 @@ public class WristExportData extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        try {
+            RobotContainer.armSubsystem.writer = new BufferedWriter(new FileWriter(RobotContainer.armSubsystem.wristDumpFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         RobotContainer.armSubsystem.toggleDumping(DumpMode.WRIST);
     }
   

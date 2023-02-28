@@ -1,11 +1,11 @@
-package frc.robot.commands.operational.setup;
+package frc.robot.commands.operational.setup.wrist;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 
-public class SetupToggle extends CommandBase {
-    public SetupToggle() {
+public class WristSetup extends CommandBase {
+    public WristSetup() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
@@ -15,8 +15,7 @@ public class SetupToggle extends CommandBase {
   
     @Override
     public void execute() {
-        if(Constants.setupState) Constants.setupState = false;
-        if(!Constants.setupState) Constants.setupState = true;
+        CommandScheduler.getInstance().schedule(RobotContainer.setupWristChooser.getSelected());
     }
   
     @Override
@@ -33,4 +32,3 @@ public class SetupToggle extends CommandBase {
         return false;
     }
 }
-

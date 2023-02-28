@@ -22,14 +22,14 @@ public final class Constants {
     public static boolean setupState = false;
 
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
-    public static final double ARM_SHOULDER_LOWERWITCH_DEG = 25d; // The amount of degrees offset from 0 degrees to lower switch (if the arm were physically able to rotate down fully)
-    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 155d; // The amount of degrees offset from 0 degrees to upper switch (if the arm were physically able to rotate down fully)
+    public static final double ARM_SHOULDER_LOWERWITCH_DEG = 26d; // The amount of degrees offset from 0 degrees to lower switch (if the arm were physically able to rotate down fully)
+    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 111d; // The amount of degrees offset from 0 degrees to upper switch (if the arm were physically able to rotate down fully)
 
     public static final int ARM_WRIST_ID = 32; // Neo 550
 
     public static final int ARM_TELESCOPE_ID = 31; // Neo 550
 
-    public static final int ARM_CLAW_ID = 69; // HD Hex Motor
+    public static final int ARM_CLAW_ID = 11; // HD Hex Motor
 
     /*
      * Preference Names
@@ -58,11 +58,16 @@ public final class Constants {
      public static final double ARM_SHOULDER_I = 0.00;
      public static final double ARM_SHOULDER_D = 0.0005;
 
-     // Arm PID
+     // Wrist PID
      public static final double ARM_WRIST_P = 0.05;
      public static final double ARM_WRIST_I = 0.00;
      public static final double ARM_WRIST_D = 0.0005;
 
+     // Telscope PID
+     public static final double ARM_TELESCOPE_P = 0.05;
+     public static final double ARM_TELESCOPE_I = 0.00;
+     public static final double ARM_TELESCOPE_D = 0.0005;
+     public static double ARM_TELESCOPE_GRAVITY_FACTOR = 0.001; // Motor Output = PIDOut + (cosine(angle in deg of arm) * ARM_TELESCOPE_GRAVITY_FACTOR)
 
 
      /*

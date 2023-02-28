@@ -12,43 +12,52 @@ public class ShoulderSetMaxMin extends CommandBase {
     private boolean minFound = false;
     private boolean calculated = false;
 
+    double upperEncVal, lowerEncVal;
+
     public ShoulderSetMaxMin() {
         addRequirements(RobotContainer.armSubsystem);
     }
   
     @Override
     public void initialize() {
+        upperEncVal = lowerEncVal = 0;
+        RobotContainer.armSubsystem.setArmBrake();
     }
   
     @Override
     public void execute() {
-        // 25 deg to 155 deg
-
-        double upperEncVal, lowerEncVal;
-        upperEncVal = lowerEncVal = 0;
-
         if(!maxFound) {
-            RobotContainer.armSubsystem.getShoulderMotor().set(0.125d);
+            RobotContainer.armSubsystem.getShoulderMotor().set(0.25d);
             if(RobotContainer.armSubsystem.getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) {
+                RobotContainer.armSubsystem.getShoulderMotor().set(0.0d);
                 upperEncVal = RobotContainer.armSubsystem.getShoulderPosition();
                 maxFound = true;
             }
+            return;
         }
         if(maxFound && !minFound) {
             RobotContainer.armSubsystem.getShoulderMotor().set(-0.125d);
-            if(RobotContainer.armSubsystem.shoulderLowerSwitch.get()) {
+            if(RobotContainer.armSubsystem.getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) {
                 RobotContainer.armSubsystem.getShoulderMotor().set(0.0d);
                 lowerEncVal = RobotContainer.armSubsystem.getShoulderPosition();
                 minFound = true;
             }
+            return;
         }
-        double encoderDifference = upperEncVal - lowerEncVal;
-        double totalEncoderCounts = (1/((Constants.ARM_SHOULDER_UPPERSWITCH_DEG-Constants.ARM_SHOULDER_LOWERWITCH_DEG)/180))*encoderDifference; // How many encoder counts are from 0 deg to 180 deg
-        double oneEightyPos = 1-(Constants.ARM_SHOULDER_UPPERSWITCH_DEG/180)*totalEncoderCounts;
-        double zeroPos = (Constants.ARM_SHOULDER_LOWERWITCH_DEG/180)*totalEncoderCounts;
-        Preferences.setDouble(Constants.SHOULDER_MAX_POS, oneEightyPos);
-        Preferences.setDouble(Constants.SHOULDER_MIN_POS, zeroPos);
-        calculated = true;
+        if(maxFound && minFound && !calculated) {
+            double amountUseable = upperEncVal - lowerEncVal;
+            double totalEncoderCounts = (1/((Constants.ARM_SHOULDER_UPPERSWITCH_DEG-Constants.ARM_SHOULDER_LOWERWITCH_DEG)/180))*amountUseable; // get amount of encoder counts are from 0 deg to 180 deg
+            
+            double countsAbove = 1-(Constants.ARM_SHOULDER_UPPERSWITCH_DEG/180)*totalEncoderCounts; // Get how many encoder counts are between the upper switch and 180 deg (sky)
+
+            double countsBelow = (Constants.ARM_SHOULDER_LOWERWITCH_DEG/180)*totalEncoderCounts; // Get how many encoder counts are between the lower switch and 0 deg (floor)
+            
+            double maxPos = countsAbove+upperEncVal; // Offset from the encoder value we get when the upper switch is hit
+            double minPos = lowerEncVal-countsBelow; // Offset from the encoder value we get when the lower switch is hit
+            Preferences.setDouble(Constants.SHOULDER_MAX_POS, maxPos);
+            Preferences.setDouble(Constants.SHOULDER_MIN_POS, minPos);
+            calculated = true;
+        }
     }
   
     @Override
@@ -64,6 +73,8 @@ public class ShoulderSetMaxMin extends CommandBase {
     public boolean isFinished() {
         if(calculated) {
             calculated = false;
+            minFound = maxFound = false;
+            upperEncVal = lowerEncVal = 0;
             return true;
         }
         return false;
