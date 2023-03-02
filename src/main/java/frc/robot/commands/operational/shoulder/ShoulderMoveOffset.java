@@ -3,6 +3,10 @@ package frc.robot.commands.operational.shoulder;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Move the shoulder by a rotational encoder offset
+ * Uses PID to automatically calculate motor speeds and correct the position
+ */
 public class ShoulderMoveOffset extends CommandBase {
     double opp = 0;
     public ShoulderMoveOffset(double offset) {

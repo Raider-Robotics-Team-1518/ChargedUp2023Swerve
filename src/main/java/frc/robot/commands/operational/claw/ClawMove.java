@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/* 
+* Open and close the claw at a custom set speed 
+*/
 public class ClawMove extends CommandBase {
     double speed = 0.25d;
     public ClawMove(double speed) {

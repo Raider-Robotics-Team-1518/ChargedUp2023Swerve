@@ -3,6 +3,9 @@ package frc.robot.commands.operational.setup.wrist;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets the zero position of the wrist, idealy this is when the wrist is facing fully horizontal, and level (90 degrees)
+ */
 public class WristSetZero extends CommandBase {
     public WristSetZero() {
         addRequirements(RobotContainer.armSubsystem);

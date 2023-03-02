@@ -3,8 +3,11 @@ package frc.robot.commands.operational.wrist;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets the wrist motor to a static positive speed.
+ */
 public class WristMove extends CommandBase {
-    double speed = 0.25d;
+    double speed = 0.375d;
     public WristMove(double speed) {
         this.speed = speed;
         addRequirements(RobotContainer.armSubsystem);

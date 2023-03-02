@@ -1,10 +1,12 @@
 package frc.robot.commands.operational.setup.telescope;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets minimum of the telescope (aka fully retracted)
+ */
 public class TelescopeSetMin extends CommandBase {
     public TelescopeSetMin() {
         addRequirements(RobotContainer.armSubsystem);
@@ -17,7 +19,7 @@ public class TelescopeSetMin extends CommandBase {
     @Override
     public void execute() {
         RobotContainer.armSubsystem.resetTelescopePosition();
-        Preferences.setDouble(Constants.TELESCOPE_MIN_POS, RobotContainer.armSubsystem.getTelescopePosition());
+        Constants.updateDouble(Constants.TELESCOPE_MIN_POS, 0.0d);
     }
   
     @Override

@@ -1,10 +1,12 @@
 package frc.robot.commands.operational.setup.wrist;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets the idle position (by some angle measured in degrees) of the wrist (idle = when robot is stationairy on the field before autonomous)
+ */
 public class WristSetIdle extends CommandBase {
     public WristSetIdle() {
         addRequirements(RobotContainer.armSubsystem);
@@ -16,7 +18,7 @@ public class WristSetIdle extends CommandBase {
   
     @Override
     public void execute() {
-        Preferences.setDouble(Constants.WRIST_IDLE_ANGLE, RobotContainer.armSubsystem.getWristAngle());
+        Constants.updateDouble(Constants.WRIST_IDLE_ANGLE, RobotContainer.armSubsystem.getWristAngle());
     }
   
     @Override

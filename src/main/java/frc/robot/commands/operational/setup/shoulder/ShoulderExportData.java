@@ -8,18 +8,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.moving.ArmSubsystem.DumpMode;
 
+/*
+ * Export Shoulder motion data into a csv file that is readable with columns time(ms), input (code input motor speed), output (actual encoder response to our code input)
+ * This data can then be used in https://pidtuner.com (after the time column is converted to seconds) in order to tune PID accuratly.
+ */
 public class ShoulderExportData extends CommandBase {
     public ShoulderExportData() {
       addRequirements(RobotContainer.armSubsystem);
     }
   
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
       RobotContainer.armSubsystem.stopArm();
     }
   
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         try {
@@ -30,7 +32,6 @@ public class ShoulderExportData extends CommandBase {
         RobotContainer.armSubsystem.toggleDumping(DumpMode.SHOULDER);
     }
   
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         RobotContainer.armSubsystem.setDoneDumping(false);
@@ -41,7 +42,6 @@ public class ShoulderExportData extends CommandBase {
         return false;
     }
   
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return RobotContainer.armSubsystem.getDoneDumping();

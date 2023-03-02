@@ -3,6 +3,9 @@ package frc.robot.commands.operational.setup.general;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/* 
+ * Sets every motor involved with the arm to coast mode (excluding Telescope)
+ */
 public class SetArmCoast extends CommandBase {
     public SetArmCoast() {
         addRequirements(RobotContainer.armSubsystem);

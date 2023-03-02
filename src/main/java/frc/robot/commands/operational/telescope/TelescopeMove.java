@@ -3,6 +3,9 @@ package frc.robot.commands.operational.telescope;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets the telescope motor to a static positive speed.
+ */
 public class TelescopeMove extends CommandBase {
     double speed = 0.25d;
     public TelescopeMove(double speed) {

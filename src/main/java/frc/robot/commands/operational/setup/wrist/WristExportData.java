@@ -8,12 +8,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.moving.ArmSubsystem.DumpMode;
 
+/*
+ * Export Wrist motion data into a csv file that is readable with columns time(ms), input (code input motor speed), output (actual encoder response to our code input)
+ * This data can then be used in https://pidtuner.com (after the time column is converted to seconds) in order to tune PID accuratly.
+ */
 public class WristExportData extends CommandBase {
     public WristExportData() {
       addRequirements(RobotContainer.armSubsystem);
     }
   
-    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
       RobotContainer.armSubsystem.stopArm();
@@ -30,7 +33,6 @@ public class WristExportData extends CommandBase {
         RobotContainer.armSubsystem.toggleDumping(DumpMode.WRIST);
     }
   
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         RobotContainer.armSubsystem.setDoneDumping(false);

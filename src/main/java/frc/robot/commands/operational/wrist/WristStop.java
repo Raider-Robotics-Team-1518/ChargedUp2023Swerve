@@ -3,6 +3,9 @@ package frc.robot.commands.operational.wrist;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Stops movement of the wrist motor.
+ */
 public class WristStop extends CommandBase {
     public WristStop() {
         addRequirements(RobotContainer.armSubsystem);

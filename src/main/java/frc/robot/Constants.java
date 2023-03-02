@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Preferences;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -14,9 +17,10 @@ import edu.wpi.first.math.geometry.Translation2d;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
+import edu.wpi.first.wpilibj2.command.Command;
 public final class Constants {
     /*
-     * Raider Robotics 1518
+     * Raider Robotics Team 1518
      */
 
     public static boolean setupState = false;
@@ -30,6 +34,10 @@ public final class Constants {
     public static final int ARM_TELESCOPE_ID = 31; // Neo 550
 
     public static final int ARM_CLAW_ID = 11; // HD Hex Motor
+
+    /*
+     * Base Tolerances
+     */
 
     /*
      * Preference Names
@@ -69,6 +77,12 @@ public final class Constants {
      public static final double ARM_TELESCOPE_D = 0.0005;
      public static double ARM_TELESCOPE_GRAVITY_FACTOR = 0.001; // Motor Output = PIDOut + (cosine(angle in deg of arm) * ARM_TELESCOPE_GRAVITY_FACTOR)
 
+
+     /* Path Planner Constants */
+
+     /* Path Planner Event Map */
+     public static HashMap<String, Command> autonomousEventMap = new HashMap<>();
+     
 
      /*
       * Greater Rochester Robotics
@@ -158,6 +172,17 @@ public final class Constants {
 
 
 
+    public static void updateDouble(String key, double newValue) {
+      try { Preferences.remove(key); } catch(Exception exception) {}
+      Preferences.setDouble(key, newValue);
+    }
+
+    public static double getDouble(String key) {
+      if(Preferences.containsKey(key)) {
+        return Preferences.getDouble(key, -69);
+      }
+      return -69;
+    }
 
     
 }

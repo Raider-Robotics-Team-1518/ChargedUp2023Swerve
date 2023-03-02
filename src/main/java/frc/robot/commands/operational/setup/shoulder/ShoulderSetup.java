@@ -4,6 +4,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotContainer;
 
+/*
+ * Toggle the command that is active in the shoulder command chooser box displayed through SmartDashboard
+ */
 public class ShoulderSetup extends CommandBase {
     public ShoulderSetup() {
         addRequirements(RobotContainer.armSubsystem);

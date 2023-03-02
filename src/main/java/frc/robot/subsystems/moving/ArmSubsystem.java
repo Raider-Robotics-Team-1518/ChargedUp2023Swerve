@@ -12,7 +12,6 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -29,23 +28,23 @@ public class ArmSubsystem extends SubsystemBase {
     // Shoulder
     private final CANSparkMax shoulderMotor = new CANSparkMax(Constants.ARM_SHOULDER_ID, MotorType.kBrushless);
     public final PIDController shoulderPidController = new PIDController(Constants.ARM_SHOULDER_P, Constants.ARM_SHOULDER_I, Constants.ARM_SHOULDER_D);
-    public double maxShoulderPos = Preferences.getDouble(Constants.SHOULDER_MAX_POS, 50d); // Arm is facing the ceiling (180 deg)
-    public double horizontalShoulderPos = Preferences.getDouble(Constants.SHOULDER_LEVEL_POS, 0d); // 90 deg
-    public double minShoulderPos = Preferences.getDouble(Constants.SHOULDER_MIN_POS, -50d); // As retracted as we can get without breaking electronics (unknown angle)
-    public double idleShoulderAngle = Preferences.getDouble(Constants.SHOULDER_IDLE_ANGLE, 35d); // (degrees)
+    public double maxShoulderPos = Constants.getDouble(Constants.SHOULDER_MAX_POS); // Arm is facing the ceiling (180 deg)
+    public double horizontalShoulderPos = Constants.getDouble(Constants.SHOULDER_LEVEL_POS); // 90 deg
+    public double minShoulderPos = Constants.getDouble(Constants.SHOULDER_MIN_POS); // As retracted as we can get without breaking electronics (unknown angle)
+    public double idleShoulderAngle = Constants.getDouble(Constants.SHOULDER_IDLE_ANGLE); // (degrees)
 
     // Wrist
     private final CANSparkMax wristMotor = new CANSparkMax(Constants.ARM_WRIST_ID, MotorType.kBrushless);
     public final PIDController wristPidController = new PIDController(Constants.ARM_WRIST_P, Constants.ARM_WRIST_I, Constants.ARM_WRIST_D);
-    public double maxWristPos = Preferences.getDouble(Constants.WRIST_MAX_POS, 50d); // 90 deg (Facing up)
-    public double minWristPos = Preferences.getDouble(Constants.WRIST_MIN_POS, -50d); // 0 deg (Level)
-    public double idleWristAngle = Preferences.getDouble(Constants.WRIST_IDLE_ANGLE, 90d); // (degrees)
+    public double maxWristPos = Constants.getDouble(Constants.WRIST_MAX_POS); // 90 deg (Facing up)
+    public double minWristPos = Constants.getDouble(Constants.WRIST_MIN_POS); // 0 deg (Level)
+    public double idleWristAngle = Constants.getDouble(Constants.WRIST_IDLE_ANGLE); // (degrees)
     public boolean lockedWrist = true;
 
     // Telescope
     private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
-    public double minTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MIN_POS, 0d); // Telescope fully retracted
-    public double maxTelescopePos = Preferences.getDouble(Constants.TELESCOPE_MAX_POS, 50d); // Telescope fully extended
+    public double minTelescopePos = Constants.getDouble(Constants.TELESCOPE_MIN_POS); // Telescope fully retracted
+    public double maxTelescopePos = Constants.getDouble(Constants.TELESCOPE_MAX_POS); // Telescope fully extended
     public double desiredTelescopeSpeed = 0.0d;
 
     // Objects specific to the dump process
@@ -180,7 +179,7 @@ public class ArmSubsystem extends SubsystemBase {
             if(target > 90) {
                 targetPos = ((target-90)/90)*maxShoulderPos;
             } else {
-                targetPos = -(maxShoulderPos+((-(target/90))*maxShoulderPos));
+                targetPos = ((target)/90)*-maxShoulderPos;
             }
         }
         shoulderPidController.setSetpoint(targetPos);
@@ -231,7 +230,7 @@ public class ArmSubsystem extends SubsystemBase {
             // above (zero) horizontal pos
             return 90+((Math.abs(getShoulderPosition()) / maxShoulderPos)*90);
         }
-        return 90-((Math.abs(getShoulderPosition()) / maxShoulderPos)*90);
+        return 90-((getShoulderPosition() / (-1*maxShoulderPos)) * 90);
     }
 
     public void resetWristPosition() {
@@ -241,6 +240,7 @@ public class ArmSubsystem extends SubsystemBase {
     public double getWristPosition() {
         return wristMotor.getEncoder().getPosition();
     }
+
 
     public double getTelescopePosition() {
         return telescopeMotor.getEncoder().getPosition();

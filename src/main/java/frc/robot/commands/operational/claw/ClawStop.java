@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
+/*
+ * Stops all movement of the claw
+ */
 public class ClawStop extends CommandBase {
     public ClawStop() {
         addRequirements(RobotContainer.clawSubsystem);

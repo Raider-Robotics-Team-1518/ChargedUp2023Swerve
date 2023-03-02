@@ -6,7 +6,6 @@ package frc.robot;
 
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.autonomous.telescope.AutoTelescopeExtend;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveStopAllModules;
 import frc.robot.commands.drive.util.DriveAdjustModulesManually;
@@ -46,6 +46,7 @@ import frc.robot.commands.operational.setup.wrist.WristSetMin;
 import frc.robot.commands.operational.setup.wrist.WristSetup;
 import frc.robot.commands.operational.telescope.TelescopeMove;
 import frc.robot.commands.operational.telescope.TelescopeStop;
+import frc.robot.commands.operational.wrist.WristToggleLock;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 import frc.robot.subsystems.moving.ClawSubsystem;
@@ -124,8 +125,14 @@ public class RobotContainer {
     configureSetupModes();
     configureAutoModes();
     configureButtonBindings();
+    configureAutonomousEventMap();
     
     CameraServer.startAutomaticCapture();
+  }
+
+  private void configureAutonomousEventMap() {
+    Constants.autonomousEventMap.put("toggleWristLock", new WristToggleLock());
+    Constants.autonomousEventMap.put("extendTelescopeFull", new AutoTelescopeExtend());
   }
 
 
@@ -155,11 +162,11 @@ public class RobotContainer {
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
     coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
-    driverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
-    driverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
+    /*driverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
+    driverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
 
-    driverX.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.5d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
-    driverY.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-0.5d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+    driverX.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.375d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+    driverY.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-0.375d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
 
     //driverA.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR+0.001d));
     //driverB.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR-0.001d));
@@ -181,18 +188,6 @@ public class RobotContainer {
   }
 
   private void configureSwerveSetup() {
-    Preferences.remove(Constants.SHOULDER_IDLE_ANGLE);
-    Preferences.remove(Constants.SHOULDER_LEVEL_POS);
-    Preferences.remove(Constants.SHOULDER_MAX_POS);
-    Preferences.remove(Constants.SHOULDER_MIN_POS);
-    Preferences.remove(Constants.WRIST_IDLE_ANGLE);
-    Preferences.remove(Constants.WRIST_MAX_POS);
-    Preferences.remove(Constants.WRIST_MIN_POS);
-    Preferences.remove(Constants.TELESCOPE_MAX_POS);
-    Preferences.remove(Constants.TELESCOPE_MIN_POS);
-
-
-
     setupSwerveChooser.addOption("D Physical", new DriveAdjustModulesManually());
     setupSwerveChooser.addOption("D To Zero", new DriveResetAllModulePositionsToZero());
     setupSwerveChooser.addOption("D Module 0", new DriveOneModule(0));

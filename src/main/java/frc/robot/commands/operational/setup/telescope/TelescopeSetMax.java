@@ -1,10 +1,12 @@
 package frc.robot.commands.operational.setup.telescope;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
+/*
+ * Sets max position of telescope (aka fully extended)
+ */
 public class TelescopeSetMax extends CommandBase {
     public TelescopeSetMax() {
         addRequirements(RobotContainer.armSubsystem);
@@ -16,7 +18,7 @@ public class TelescopeSetMax extends CommandBase {
   
     @Override
     public void execute() {
-        Preferences.setDouble(Constants.TELESCOPE_MAX_POS, RobotContainer.armSubsystem.getTelescopePosition());
+        Constants.updateDouble(Constants.TELESCOPE_MAX_POS, RobotContainer.armSubsystem.getTelescopePosition());
     }
   
     @Override

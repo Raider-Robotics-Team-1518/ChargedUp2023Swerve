@@ -2,7 +2,6 @@ package frc.robot.commands.operational.setup.wrist;
 
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -29,14 +28,14 @@ public class WristSetMaxMin extends CommandBase {
             RobotContainer.armSubsystem.getWristMotor().set(-0.5d);
             if(RobotContainer.armSubsystem.getWristMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) {
                 RobotContainer.armSubsystem.resetWristPosition();
-                Preferences.setDouble(Constants.WRIST_MIN_POS, RobotContainer.armSubsystem.getWristPosition());
+                Constants.updateDouble(Constants.WRIST_MIN_POS, RobotContainer.armSubsystem.getWristPosition());
                 minFound = true;
             }
         }
         if(!maxFound && minFound) {
             RobotContainer.armSubsystem.getWristMotor().set(0.5d);
             if(RobotContainer.armSubsystem.getWristMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) {
-                Preferences.setDouble(Constants.WRIST_MAX_POS, RobotContainer.armSubsystem.getWristPosition());
+                Constants.updateDouble(Constants.WRIST_MAX_POS, RobotContainer.armSubsystem.getWristPosition());
                 maxFound = true;
             }
         }

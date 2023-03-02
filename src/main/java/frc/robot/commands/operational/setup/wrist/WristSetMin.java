@@ -1,6 +1,5 @@
 package frc.robot.commands.operational.setup.wrist;
 
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -19,7 +18,7 @@ public class WristSetMin extends CommandBase {
     @Override
     public void execute() {
         RobotContainer.armSubsystem.resetWristPosition();
-        Preferences.setDouble(Constants.WRIST_MIN_POS, RobotContainer.armSubsystem.getWristPosition());
+        Constants.updateDouble(Constants.WRIST_MIN_POS, 0.0d);
         found = true;
     }
   
