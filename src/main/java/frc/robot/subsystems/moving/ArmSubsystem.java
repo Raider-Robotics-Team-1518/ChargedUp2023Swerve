@@ -30,7 +30,6 @@ public class ArmSubsystem extends SubsystemBase {
     public final PIDController shoulderPidController = new PIDController(Constants.ARM_SHOULDER_P, Constants.ARM_SHOULDER_I, Constants.ARM_SHOULDER_D);
     public double maxShoulderPos = Constants.getDouble(Constants.SHOULDER_MAX_POS); // Arm is facing the ceiling (180 deg)
     public double horizontalShoulderPos = Constants.getDouble(Constants.SHOULDER_LEVEL_POS); // 90 deg
-    public double minShoulderPos = Constants.getDouble(Constants.SHOULDER_MIN_POS); // As retracted as we can get without breaking electronics (unknown angle)
     public double idleShoulderAngle = Constants.getDouble(Constants.SHOULDER_IDLE_ANGLE); // (degrees)
 
     // Wrist
@@ -64,7 +63,7 @@ public class ArmSubsystem extends SubsystemBase {
         setArmBrake();
 
         // shoulder pid setup
-        setShoulderTargetPos(idleShoulderAngle, true);
+        setShoulderTargetPos(15, true);
         shoulderPidController.setTolerance(0.1);
 
         // wrist pid setup
@@ -84,6 +83,7 @@ public class ArmSubsystem extends SubsystemBase {
                     writer.newLine();
                 }
                 switch(currentDumpMode) {
+                    
                     case SHOULDER:
                         doShoulderDump();
                         break;
@@ -113,15 +113,13 @@ public class ArmSubsystem extends SubsystemBase {
         }
 
         telescopeArbitraryFF();
+        //!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
+        fixateShoulder(); //fixate just shoulder motor
+        //fixateArm(INSTANCE.lockedWrist); // fixate both
+    }
 
-        // debugging 
-        /*
-        if(!DriverStation.isEnabled()) return;
-        !!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
-        //fixateShoulder(); fixate just shoulder motor
-        //fixateWrist(); fixate just wrist motor
-        fixateArm(INSTANCE.lockedWrist); // fixate both
-        */
+    public void offsetShoulder(double offset) {
+        shoulderPidController.setSetpoint(shoulderPidController.getSetpoint()+offset);
     }
 
     public void setArmCoast() {
@@ -175,13 +173,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setShoulderTargetPos(double target, boolean angle) {
         double targetPos = target;
-        if(angle) {
-            if(target > 90) {
-                targetPos = ((target-90)/90)*maxShoulderPos;
-            } else {
-                targetPos = ((target)/90)*-maxShoulderPos;
-            }
-        }
+        if(angle) targetPos = ((target/180)*maxShoulderPos);
         shoulderPidController.setSetpoint(targetPos);
     }
 
@@ -209,13 +201,30 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public boolean isWristInRange() {
-        double wristPos = wristMotor.getEncoder().getPosition();
-        return ((wristPos < maxWristPos) && (wristPos > minWristPos));
+        return true;
+        //double wristPos = wristMotor.getEncoder().getPosition();
+        //return ((wristPos < maxWristPos) && (wristPos > minWristPos));
     }
 
     public boolean isTelescopeInRange() {
         double telescopePos = telescopeMotor.getEncoder().getPosition();
         return ((telescopePos < maxTelescopePos) && (telescopePos > minTelescopePos));
+    }
+
+    public void telescopeExtend() {
+        telescopeMotor.set(Constants.telescopeSpeed);
+    }
+
+    public void telescopeRetract() {
+        telescopeMotor.set(-Constants.telescopeSpeed);
+    }
+
+    public boolean telescopeExtended() {
+        return (getTelescopePosition() <= (maxTelescopePos-5));
+    }
+
+    public boolean telescopeRetracted() {
+        return (getTelescopePosition() >= (minTelescopePos+5));
     }
 
     public double getWristAngle() {
@@ -224,13 +233,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 
     public double getShoulderAngle() {
-        /* since i only know the position from (zero/90 deg) horizontal to (180 deg) the highest point, 
-        calculations must be done to account for negative values */
-        if(getShoulderPosition() > 0) {
-            // above (zero) horizontal pos
-            return 90+((Math.abs(getShoulderPosition()) / maxShoulderPos)*90);
-        }
-        return 90-((getShoulderPosition() / (-1*maxShoulderPos)) * 90);
+        // max shoulder pos = (1/((Constants.ARM_SHOULDER_UPPERSWITCH_DEG+Constants.ARM_SHOULDER_LOWERSWITCH_DEG)/180))*upperEncVal;
+        return ((getShoulderPosition()/maxShoulderPos)*180)+Constants.ARM_SHOULDER_LOWERSWITCH_DEG;
     }
 
     public void resetWristPosition() {
@@ -260,6 +264,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     public CommandBase stopArm() {
         return Commands.sequence(stopShoulder(), stopWrist(), stopTelescope());
+    }
+
+    public void setWristSpeed(double speed) {
+        wristMotor.set(speed);
     }
 
     public void toggleDumping(DumpMode dumpMode) {

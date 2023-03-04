@@ -18,7 +18,15 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.autonomous.claw.AutoCloseClaw;
+import frc.robot.commands.autonomous.claw.AutoOpenClaw;
+import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
+import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderGrabbing;
+import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderPlacing;
 import frc.robot.commands.autonomous.telescope.AutoTelescopeExtend;
+import frc.robot.commands.autonomous.telescope.AutoTelescopeRetract;
+import frc.robot.commands.autonomous.wrist.AutoRotateWristCarrying;
+import frc.robot.commands.autonomous.wrist.AutoRotateWristGrabbing;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveStopAllModules;
 import frc.robot.commands.drive.util.DriveAdjustModulesManually;
@@ -32,6 +40,7 @@ import frc.robot.commands.operational.setup.general.SetArmBrake;
 import frc.robot.commands.operational.setup.general.SetArmCoast;
 import frc.robot.commands.operational.setup.general.SetupToggle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderExportData;
+import frc.robot.commands.operational.setup.shoulder.ShoulderMoveLevel;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetIdle;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetMaxMin;
 import frc.robot.commands.operational.setup.shoulder.ShoulderSetZero;
@@ -44,8 +53,11 @@ import frc.robot.commands.operational.setup.wrist.WristSetIdle;
 import frc.robot.commands.operational.setup.wrist.WristSetMax;
 import frc.robot.commands.operational.setup.wrist.WristSetMin;
 import frc.robot.commands.operational.setup.wrist.WristSetup;
+import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
 import frc.robot.commands.operational.telescope.TelescopeMove;
 import frc.robot.commands.operational.telescope.TelescopeStop;
+import frc.robot.commands.operational.wrist.WristMove;
+import frc.robot.commands.operational.wrist.WristStop;
 import frc.robot.commands.operational.wrist.WristToggleLock;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
@@ -132,7 +144,15 @@ public class RobotContainer {
 
   private void configureAutonomousEventMap() {
     Constants.autonomousEventMap.put("toggleWristLock", new WristToggleLock());
-    Constants.autonomousEventMap.put("extendTelescopeFull", new AutoTelescopeExtend());
+    Constants.autonomousEventMap.put("extendTelescope", new AutoTelescopeExtend());
+    Constants.autonomousEventMap.put("retractTelescope", new AutoTelescopeRetract());
+    Constants.autonomousEventMap.put("openClaw", new AutoOpenClaw());
+    Constants.autonomousEventMap.put("closeClaw", new AutoCloseClaw());
+    Constants.autonomousEventMap.put("rotateToPlacePosShoulder", new AutoRotateShoulderPlacing());
+    Constants.autonomousEventMap.put("rotateToGrabPosShoulder", new AutoRotateShoulderGrabbing());
+    Constants.autonomousEventMap.put("rotateToCarryPosShoulder", new AutoRotateShoulderCarrying());
+    Constants.autonomousEventMap.put("rotateToGrabbingWrist", new AutoRotateWristGrabbing());
+    Constants.autonomousEventMap.put("rotateToCarryPosWrist", new AutoRotateWristCarrying());
   }
 
 
@@ -162,11 +182,17 @@ public class RobotContainer {
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
     coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
-    /*driverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
-    driverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
+    coDriverX.whileTrue(new ClawMove(-Constants.clawSpeed)).onFalse(new ClawStop());
+    coDriverY.whileTrue(new ClawMove(Constants.clawSpeed)).onFalse(new ClawStop());
+    coDriverDUp.whileTrue(new WristMove(Constants.wristSpeed)).onFalse(new WristStop());
+    coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
+    coDriverRB.whileTrue(new TelescopeMove(Constants.telescopeSpeed)).onFalse(new TelescopeStop());
+    coDriverLB.whileTrue(new TelescopeMove(-Constants.telescopeSpeed)).onFalse(new TelescopeStop());
+    coDriverA.onTrue(new ShoulderMoveOffset(Constants.shoulderOffsetSpeed)).onFalse(Commands.runOnce(() -> ShoulderMoveOffset.INSTANCE.done = true));
+    coDriverB.onTrue(new ShoulderMoveOffset(-Constants.shoulderOffsetSpeed)).onFalse(Commands.runOnce(() -> ShoulderMoveOffset.INSTANCE.done = true));
 
-    driverX.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.375d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
-    driverY.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-0.375d))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+    //coDriverDUp.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
+    //coDriverDDown.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
 
     //driverA.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR+0.001d));
     //driverB.toggleOnTrue(Commands.runOnce(() -> Constants.ARM_TELESCOPE_GRAVITY_FACTOR=Constants.ARM_TELESCOPE_GRAVITY_FACTOR-0.001d));
@@ -212,6 +238,7 @@ public class RobotContainer {
     /* Shoulder */
     setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());
     setupShoulderChooser.addOption("Export Motion Data", new ShoulderExportData());
+    setupShoulderChooser.addOption("Move to 90", new ShoulderMoveLevel());
     setupShoulderChooser.addOption("Set Idle Pos", new ShoulderSetIdle());
     setupShoulderChooser.addOption("Set Level Pos", new ShoulderSetZero());
     setupShoulderChooser.setDefaultOption("None", new WaitCommand(1));

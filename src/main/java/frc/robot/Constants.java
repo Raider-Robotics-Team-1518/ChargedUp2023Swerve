@@ -26,8 +26,10 @@ public final class Constants {
     public static boolean setupState = false;
 
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
-    public static final double ARM_SHOULDER_LOWERWITCH_DEG = 26d; // The amount of degrees offset from 0 degrees to lower switch (if the arm were physically able to rotate down fully)
-    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 111d; // The amount of degrees offset from 0 degrees to upper switch (if the arm were physically able to rotate down fully)
+    //public static final double ARM_SHOULDER_LEVEL_DEG = 69d; // Degrees offset from the lower switch with the lower switch pos being considered 0 degrees and 0 encoder position
+    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 72d; // Degrees offset from the lower switch to the upper switch
+                                                                   // with the lower switch pos being considered 0 degrees and 0 encoder position
+    public static final double ARM_SHOULDER_LOWERSWITCH_DEG = 22d; // Degrees offset from the tower to the lower switch
 
     public static final int ARM_WRIST_ID = 32; // Neo 550
 
@@ -36,8 +38,22 @@ public final class Constants {
     public static final int ARM_CLAW_ID = 11; // HD Hex Motor
 
     /*
-     * Base Tolerances
+     * Static Motor Set Speeds
      */
+
+     /* Teleoperated */
+     public static final double telescopeSpeed = 0.5d;
+     public static final double shoulderOffsetSpeed = 0.5d;
+     public static final double wristSpeed = 0.25d;
+     public static final double clawSpeed = 0.25d;
+
+     /* Autonomous */
+     public static final double autoTelescopeSpeed = 0.5d;
+     public static final double autoClawSpeed = 0.25d;
+     public static final double autoWristSpeed = 0.25d;
+
+     public static final double clawFeedSpeed = 0.0625d;
+
 
     /*
      * Preference Names
@@ -46,7 +62,6 @@ public final class Constants {
      /* Shoulder */
      public static final String SHOULDER_IDLE_ANGLE = "shoulderIdleAngle";
      public static final String SHOULDER_MAX_POS = "shoulderMaxPos";
-     public static final String SHOULDER_MIN_POS = "shoulderMinPos";
      public static final String SHOULDER_LEVEL_POS = "shoulderLevelPos";
 
      /* Wrist */

@@ -1,23 +1,20 @@
-package frc.robot.commands.operational.wrist;
+package frc.robot.commands.operational.setup.shoulder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-/*
- * Stops movement of the wrist motor.
- */
-public class WristStop extends CommandBase {
-    public WristStop() {
+public class ShoulderMoveLevel extends CommandBase {
+    public ShoulderMoveLevel() {
         addRequirements(RobotContainer.armSubsystem);
     }
-  
+
     @Override
     public void initialize() {
     }
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.getWristMotor().set(0.0d);
+        RobotContainer.armSubsystem.setShoulderTargetPos(90, true);
     }
   
     @Override
@@ -33,4 +30,6 @@ public class WristStop extends CommandBase {
     public boolean isFinished() {
         return true;
     }
-}
+  }
+
+

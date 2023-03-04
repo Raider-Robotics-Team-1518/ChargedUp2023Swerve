@@ -1,25 +1,25 @@
-package frc.robot.commands.autonomous.telescope;
+package frc.robot.commands.autonomous.claw;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class AutoTelescopeExtend extends CommandBase {
-    public AutoTelescopeExtend() {
+public class AutoCloseClaw extends CommandBase {
+    public AutoCloseClaw() {
         addRequirements(RobotContainer.swerveDrive, RobotContainer.armSubsystem, RobotContainer.clawSubsystem);
     }
 
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.telescopeExtend();
+        RobotContainer.clawSubsystem.enableClawMotor(-Constants.autoClawSpeed);
     }
 
     @Override
     public void end(boolean interrupted) {
-        RobotContainer.armSubsystem.stopTelescope();
     }
 
     @Override
     public boolean isFinished() {
-        return RobotContainer.armSubsystem.telescopeExtended();
+        return RobotContainer.clawSubsystem.innerSwitchReached();
     }
 }

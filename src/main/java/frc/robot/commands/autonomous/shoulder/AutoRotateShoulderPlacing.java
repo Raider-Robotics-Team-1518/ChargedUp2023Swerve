@@ -1,25 +1,28 @@
-package frc.robot.commands.autonomous.telescope;
+package frc.robot.commands.autonomous.shoulder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
-public class AutoTelescopeExtend extends CommandBase {
-    public AutoTelescopeExtend() {
+/*
+ * Rotate arm to prime dropping position
+ */
+
+public class AutoRotateShoulderPlacing extends CommandBase {
+    public AutoRotateShoulderPlacing() {
         addRequirements(RobotContainer.swerveDrive, RobotContainer.armSubsystem, RobotContainer.clawSubsystem);
     }
 
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.telescopeExtend();
+        RobotContainer.armSubsystem.setShoulderTargetPos(90, true);
     }
 
     @Override
     public void end(boolean interrupted) {
-        RobotContainer.armSubsystem.stopTelescope();
     }
 
     @Override
     public boolean isFinished() {
-        return RobotContainer.armSubsystem.telescopeExtended();
+        return RobotContainer.armSubsystem.shoulderPidController.atSetpoint();
     }
 }

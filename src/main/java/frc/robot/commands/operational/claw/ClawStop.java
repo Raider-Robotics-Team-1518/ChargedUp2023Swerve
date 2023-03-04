@@ -33,6 +33,6 @@ public class ClawStop extends CommandBase {
   
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

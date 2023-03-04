@@ -20,34 +20,43 @@ public class ShoulderSetMaxMin extends CommandBase {
     @Override
     public void initialize() {
         upperEncVal = lowerEncVal = 0;
+        calculated = false;
+        maxFound = minFound = false;
         RobotContainer.armSubsystem.setArmBrake();
     }
   
     @Override
     public void execute() {
-        if(!maxFound) {
-            RobotContainer.armSubsystem.getShoulderMotor().set(0.25d);
-            if(RobotContainer.armSubsystem.getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) {
-                RobotContainer.armSubsystem.getShoulderMotor().set(0.0d);
-                upperEncVal = RobotContainer.armSubsystem.getShoulderPosition();
-                maxFound = true;
+        if(!minFound) {
+            if(RobotContainer.armSubsystem.getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) {
+                RobotContainer.armSubsystem.resetShoulderPosition(); // set to 0
+                lowerEncVal = 0.0d; // set local variable to zero
+                minFound = true; // we found the min
             }
             return;
         }
-        if(maxFound && !minFound) {
-            RobotContainer.armSubsystem.getShoulderMotor().set(-0.125d);
-            if(RobotContainer.armSubsystem.getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) {
-                RobotContainer.armSubsystem.getShoulderMotor().set(0.0d);
-                lowerEncVal = RobotContainer.armSubsystem.getShoulderPosition();
-                minFound = true;
+        if(!maxFound && minFound) {
+            RobotContainer.armSubsystem.getShoulderMotor().set(0.25d);
+            if(RobotContainer.armSubsystem.getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) {
+                RobotContainer.armSubsystem.getShoulderMotor().set(0.0d); // disable motor
+                upperEncVal = RobotContainer.armSubsystem.getShoulderPosition(); // set local varaible to position
+                maxFound = true; // we found the max
             }
             return;
         }
         if(maxFound && minFound && !calculated) {
+            double oneEightyPosition = (1/(Constants.ARM_SHOULDER_UPPERSWITCH_DEG/180))*upperEncVal;
+            Constants.updateDouble(Constants.SHOULDER_MAX_POS, oneEightyPosition);
+            calculated = true;
+            return;
+        }
+        /*if(maxFound && minFound && !calculated) {
+            
+
             double encoderCountObtainable = upperEncVal + Math.abs(lowerEncVal);
             double totalEncoderCounts = (1/((Constants.ARM_SHOULDER_UPPERSWITCH_DEG-Constants.ARM_SHOULDER_LOWERWITCH_DEG)/180))*encoderCountObtainable; // get amount of encoder counts are from 0 deg to 180 deg
             
-            double countsAbove = 1-(Constants.ARM_SHOULDER_UPPERSWITCH_DEG/180)*totalEncoderCounts; // Get how many encoder counts are between the upper switch and 180 deg (sky)
+            double countsAbove = (1-(Constants.ARM_SHOULDER_UPPERSWITCH_DEG/180))*totalEncoderCounts; // Get how many encoder counts are between the upper switch and 180 deg (sky)
 
             double countsBelow = (Constants.ARM_SHOULDER_LOWERWITCH_DEG/180)*totalEncoderCounts; // Get how many encoder counts are between the lower switch and 0 deg (floor)
             
@@ -56,7 +65,7 @@ public class ShoulderSetMaxMin extends CommandBase {
             Constants.updateDouble(Constants.SHOULDER_MAX_POS, maxPos);
             Constants.updateDouble(Constants.SHOULDER_MIN_POS, minPos);
             calculated = true;
-        }
+        }*/
     }
   
     @Override

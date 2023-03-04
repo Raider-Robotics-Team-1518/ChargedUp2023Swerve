@@ -7,7 +7,7 @@ import frc.robot.RobotContainer;
  * Sets the wrist motor to a static positive speed.
  */
 public class WristMove extends CommandBase {
-    double speed = 0.375d;
+    private double speed = 0.375d;
     public WristMove(double speed) {
         this.speed = speed;
         addRequirements(RobotContainer.armSubsystem);
@@ -19,9 +19,9 @@ public class WristMove extends CommandBase {
   
     @Override
     public void execute() {
-        if(RobotContainer.armSubsystem.isWristInRange() && !RobotContainer.armSubsystem.lockedWrist) {
-            RobotContainer.armSubsystem.getWristMotor().set(speed);
-        }
+        //if(RobotContainer.armSubsystem.isWristInRange() && !RobotContainer.armSubsystem.lockedWrist) {
+            RobotContainer.armSubsystem.getWristMotor().set(this.speed);
+        //}
     }
   
     @Override
@@ -35,6 +35,6 @@ public class WristMove extends CommandBase {
   
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

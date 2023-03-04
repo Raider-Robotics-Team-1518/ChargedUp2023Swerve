@@ -35,6 +35,6 @@ public class ClawMove extends CommandBase {
   
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

@@ -8,8 +8,12 @@ import frc.robot.RobotContainer;
  * Uses PID to automatically calculate motor speeds and correct the position
  */
 public class ShoulderMoveOffset extends CommandBase {
-    double opp = 0;
+    public boolean done;
+    public double opp = 0;
+    public static ShoulderMoveOffset INSTANCE;
     public ShoulderMoveOffset(double offset) {
+        INSTANCE = this;
+        this.done = false;
         this.opp = offset;
         addRequirements(RobotContainer.armSubsystem);
     }
@@ -20,11 +24,12 @@ public class ShoulderMoveOffset extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.shoulderPidController.getSetpoint()+opp);
+        RobotContainer.armSubsystem.offsetShoulder(opp);
     }
   
     @Override
     public void end(boolean interrupted) {
+        done = false;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class ShoulderMoveOffset extends CommandBase {
   
     @Override
     public boolean isFinished() {
-        return RobotContainer.armSubsystem.shoulderPidController.atSetpoint();
+        return done;
     }
   }
 

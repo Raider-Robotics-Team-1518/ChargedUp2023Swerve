@@ -36,7 +36,7 @@ public class SwerveDrive extends SubsystemBase {
   private static SwerveModule swerveModules[];
   private static SwerveModule frontLeft, rearLeft, rearRight, frontRight;
   public AHRS imu;
-  private SwerveDriveKinematics driveKinematics;
+  public SwerveDriveKinematics driveKinematics;
   public SwerveDriveOdometry driveOdometry;
   private PIDController robotSpinController;
   private PIDController robotCounterSpinController;
@@ -109,6 +109,14 @@ public class SwerveDrive extends SubsystemBase {
 
   }
 
+  public void setModuleStates(SwerveModuleState[] states) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, 1.0d);
+    //pass along SwerveModuleStates to SwerveModules and pass along boolean isVeloMode
+    for (int i = 0; i < states.length; i++) {
+        swerveModules[i].setModuleState(states[i], false);
+    }
+  }
+
   /* =================== Module Drive Methods =================== */
 
   /**
@@ -119,7 +127,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param chassisSpeeds an object  
    * @param isVeloMode true if velocity mode, false if percent output mode
    */
-  public void driveRobotCentric(ChassisSpeeds chassisSpeeds , boolean isVeloMode, boolean rotationOnlyMode){
+  public void driveRobotCentric(ChassisSpeeds chassisSpeeds, boolean isVeloMode, boolean rotationOnlyMode){
     //instantiate an array of SwerveModuleStates, set equal to the output of toSwerveModuleStates() 
     SwerveModuleState[] targetStates = driveKinematics.toSwerveModuleStates(chassisSpeeds);
     //use SwerveDriveKinematic.desaturateWheelSpeeds(), max speed is 1 if percentOutput, MaxVelovcity if velocity mode
@@ -219,6 +227,14 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Pose2d getCurPose2d(){
     return driveOdometry.getPoseMeters();
+  }
+
+  public void resetPose() {
+    driveOdometry.resetPosition(getGyroRotation2d(), getSwerveModulePositions(), getCurPose2d());
+  }
+
+  public void resetPoseAprilTags() {
+
   }
 
   /**
