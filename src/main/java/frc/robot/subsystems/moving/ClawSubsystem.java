@@ -23,6 +23,7 @@ public class ClawSubsystem extends SubsystemBase {
   }
 
   public void enableClawMotor(double speed) {
+    getClawMotor().setNeutralMode(NeutralMode.Brake);
     RobotContainer.clawSubsystem.getClawMotor().set(ControlMode.PercentOutput, speed);
   }
 
