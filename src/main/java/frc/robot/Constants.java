@@ -45,7 +45,7 @@ public final class Constants {
      public static final double telescopeSpeed = 0.5d;
      public static final double shoulderOffsetSpeed = 0.5d;
      public static final double wristSpeed = 0.25d;
-     public static final double clawSpeed = 0.25d;
+     public static final double clawSpeed = 1d;
 
      /* Autonomous */
      public static final double autoTelescopeSpeed = 0.5d;
@@ -53,6 +53,8 @@ public final class Constants {
      public static final double autoWristSpeed = 0.25d;
 
      public static final double clawFeedSpeed = 0.0625d;
+
+
 
 
     /*
@@ -119,6 +121,8 @@ public final class Constants {
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
     public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default
+    public static final double PATH_MAXIMUM_VELOCITY = 3.5d;
+    public static final double MAXIMUM_ACCELERATION = 1.25d;
 
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 

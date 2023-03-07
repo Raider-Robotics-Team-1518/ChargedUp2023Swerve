@@ -61,14 +61,13 @@ public class DriveFieldRelativeAdvanced extends CommandBase {
     //create rotation speed from gamepad triggers
     double rotSpeed = Robot.robotContainer.getDriverAxis(Axis.kRightTrigger) - Robot.robotContainer.getDriverAxis(Axis.kLeftTrigger);
 
-    //use DPad to turn to specific angles. left over from 2021
-    // if(Robot.robotContainer.getDriverDPad() == 0){
-    //   currentAngle = Math.round(RobotContainer.swerveDrive.getGyroInRad()/Constants.TWO_PI) * Constants.TWO_PI;
-    // }
-    // else if(Robot.robotContainer.getDriverDPad() == 90){
-    //   currentAngle = Math.round(RobotContainer.swerveDrive.getGyroInRad()/Constants.TWO_PI) * Constants.TWO_PI - 1.178;
-    // }
-
+    //use DPad to turn to specific angles. left over from GRR 340 2021
+    /*if(Robot.robotContainer.getDriverDPad() == 0){
+       currentAngle = Math.round(RobotContainer.swerveDrive.getGyroInRad()/Constants.TWO_PI) * Constants.TWO_PI;
+    } else if(Robot.robotContainer.getDriverDPad() == 90){
+      currentAngle = Math.round(RobotContainer.swerveDrive.getGyroInRad()/Constants.TWO_PI) * Constants.TWO_PI - 1.178;
+    }*/
+    
     //test if the absolute rotational input is greater than .1
     if (Math.abs(rotSpeed) > .1){
       //if the test is true, just copy the DriveFieldCentric execute method

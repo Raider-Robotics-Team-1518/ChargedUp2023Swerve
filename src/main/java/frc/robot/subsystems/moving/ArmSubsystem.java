@@ -44,7 +44,6 @@ public class ArmSubsystem extends SubsystemBase {
     private final CANSparkMax telescopeMotor = new CANSparkMax(Constants.ARM_TELESCOPE_ID, MotorType.kBrushless);
     public double minTelescopePos = Constants.getDouble(Constants.TELESCOPE_MIN_POS); // Telescope fully retracted
     public double maxTelescopePos = Constants.getDouble(Constants.TELESCOPE_MAX_POS); // Telescope fully extended
-    public double desiredTelescopeSpeed = 0.0d;
 
     // Objects specific to the dump process
     private boolean isDumping = false;
@@ -69,6 +68,8 @@ public class ArmSubsystem extends SubsystemBase {
         // wrist pid setup
         setWristTargetPos(idleWristAngle, true);
         wristPidController.setTolerance(0.1);
+
+        wristMotor.setInverted(true);
     }
 
     @Override
@@ -111,14 +112,17 @@ public class ArmSubsystem extends SubsystemBase {
         if(!DriverStation.isEnabled()) {
             return;
         }
-
-        telescopeArbitraryFF();
         //!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
         fixateShoulder(); //fixate just shoulder motor
+        //fixateWrist();
         //fixateArm(INSTANCE.lockedWrist); // fixate both
     }
 
     public void offsetShoulder(double offset) {
+        if(offset < 0) {
+            double target = shoulderPidController.getSetpoint()+offset;
+            shoulderPidController.setSetpoint(target);
+        }
         shoulderPidController.setSetpoint(shoulderPidController.getSetpoint()+offset);
     }
 
@@ -134,22 +138,8 @@ public class ArmSubsystem extends SubsystemBase {
         telescopeMotor.setIdleMode(IdleMode.kBrake);
     }
 
-    public void overcomeGravityTelescope() {
-        // basic equation assuming the cosine of the shoulder angle is porportionate to motor input speed against gravity (abitrary feed forward)
-
-    }
-
     public void setTelescopeSpeed(double speed) {
-        this.desiredTelescopeSpeed = speed;
-    }
-
-    public void telescopeArbitraryFF() {
-        /*if(this.desiredTelescopeSpeed != 0.0d) {
-            telescopeMotor.set(this.desiredTelescopeSpeed);
-            return;
-        }
-        telescopeMotor.set((this.desiredTelescopeSpeed + (Constants.ARM_TELESCOPE_GRAVITY_FACTOR * Math.cos(getShoulderAngle()))));*/
-        telescopeMotor.set(this.desiredTelescopeSpeed);
+        this.telescopeMotor.set(speed);
     }
 
     public void setupDumping() {
@@ -165,6 +155,12 @@ public class ArmSubsystem extends SubsystemBase {
 
     }
 
+    public double potentialWristTargetPos(double target, boolean angle) {
+        double targetPos = target;
+        if(angle) targetPos = ((target/90)*maxWristPos);
+        return targetPos;
+    }
+
     public void setWristTargetPos(double target, boolean angle) {
         double targetPos = target;
         if(angle) targetPos = ((target/90)*maxWristPos);
@@ -177,14 +173,15 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderPidController.setSetpoint(targetPos);
     }
 
-    public void fixateArm(boolean lockedWrist) {
-        if(lockedWrist) {
-            setWristTargetPos(90+getShoulderAngle(), true);
-        }
+    public void fixateArm() {
+        fixateWrist();
         fixateShoulder();
     }
 
     public void fixateWrist() {
+        if(lockedWrist) {
+            setWristTargetPos(90-getShoulderAngle(), true);
+        }
         if(!wristPidController.atSetpoint()) {
             wristMotor.set(wristPidController.calculate(this.getWristPosition(), wristPidController.getSetpoint()));
         } else {
@@ -206,8 +203,28 @@ public class ArmSubsystem extends SubsystemBase {
         //return ((wristPos < maxWristPos) && (wristPos > minWristPos));
     }
 
-    public boolean isTelescopeInRange() {
-        double telescopePos = telescopeMotor.getEncoder().getPosition();
+    public boolean canTelescopeExtend() {
+        double telescopePos = Math.abs(telescopeMotor.getEncoder().getPosition());
+        return (telescopePos <= maxTelescopePos);
+    }
+
+    public boolean canTelescopeRetract() {
+        double telescopePos = Math.abs(telescopeMotor.getEncoder().getPosition());
+        return (telescopePos >= minTelescopePos);
+    }
+
+    public boolean canEnableTelescope(boolean forward) {
+        if(forward) {
+            return canTelescopeExtend();
+        }
+        return canTelescopeRetract();
+    }
+
+    public boolean isTelescopeInRange(boolean forward) {
+        double telescopePos = Math.abs(telescopeMotor.getEncoder().getPosition());
+        if(forward) {
+
+        }
         return ((telescopePos < maxTelescopePos) && (telescopePos > minTelescopePos));
     }
 
@@ -270,7 +287,15 @@ public class ArmSubsystem extends SubsystemBase {
         wristMotor.set(speed);
     }
 
-    public void toggleDumping(DumpMode dumpMode) {
+    public void toggleDumping(DumpMode dumpMode) throws IOException {
+        switch(dumpMode) {
+            case WRIST:
+                writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
+                break;
+            case SHOULDER:
+                writer = new BufferedWriter(new FileWriter(shoulderDumpFile)); 
+                break;
+        }
         INSTANCE.currentDumpMode = dumpMode;
         INSTANCE.isDumping = !INSTANCE.isDumping;
     }

@@ -29,7 +29,11 @@ public class ShoulderExportData extends CommandBase {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        RobotContainer.armSubsystem.toggleDumping(DumpMode.SHOULDER);
+        try {
+            RobotContainer.armSubsystem.toggleDumping(DumpMode.SHOULDER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
   
     @Override

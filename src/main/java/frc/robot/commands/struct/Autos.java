@@ -19,7 +19,8 @@ public class Autos {
         pathGroup = PathPlanner.loadPathGroup(pathName, new PathConstraints(maxVel, maxAccel));
 
         SwerveDrive driveSystem = RobotContainer.swerveDrive;
-
+        
+        //AprilTagSwerveAutoBuilder autoBuilder = new AprilTagSwerveAutoBuilder(
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
             driveSystem::getCurPose2d,
             driveSystem::setCurPose2d,
@@ -28,8 +29,11 @@ public class Autos {
             new PIDConstants(Constants.SWERVE_ROT_P_VALUE, Constants.SWERVE_ROT_I_VALUE, Constants.SWERVE_ROT_D_VALUE),
             driveSystem::setModuleStates,
             Constants.autonomousEventMap,
-            true,
             driveSystem);
         return autoBuilder.fullAuto(pathGroup);
+    }
+
+    public static Command autoDriveStraight() {
+        return getFullAuto("DriveStraight", Constants.PATH_MAXIMUM_VELOCITY, Constants.MAXIMUM_ACCELERATION);
     }
 }

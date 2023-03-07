@@ -27,12 +27,15 @@ import frc.robot.commands.autonomous.telescope.AutoTelescopeExtend;
 import frc.robot.commands.autonomous.telescope.AutoTelescopeRetract;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristCarrying;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristGrabbing;
+import frc.robot.commands.drive.DriveFieldRelative;
 import frc.robot.commands.drive.DriveRobotCentric;
+import frc.robot.commands.drive.DriveRobotCentricDPAD;
 import frc.robot.commands.drive.DriveStopAllModules;
 import frc.robot.commands.drive.util.DriveAdjustModulesManually;
 import frc.robot.commands.drive.util.DriveAllModulesPositionOnly;
 import frc.robot.commands.drive.util.DriveOneModule;
 import frc.robot.commands.drive.util.DriveResetAllModulePositionsToZero;
+import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
@@ -59,6 +62,7 @@ import frc.robot.commands.operational.telescope.TelescopeStop;
 import frc.robot.commands.operational.wrist.WristMove;
 import frc.robot.commands.operational.wrist.WristStop;
 import frc.robot.commands.operational.wrist.WristToggleLock;
+import frc.robot.commands.struct.Autos;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 import frc.robot.subsystems.moving.ClawSubsystem;
@@ -121,7 +125,6 @@ public class RobotContainer {
 
   /* Command Choosers */
   public static SendableChooser<Command> autoChooser = new SendableChooser<Command>(); // Autonomous
-  public static SendableChooser<Command> setupSwerveChooser = new SendableChooser<Command>(); // Swerve Setup
   public static SendableChooser<Command> setupShoulderChooser = new SendableChooser<Command>(); // Shoulder Setup
   public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>(); // Wrist Setup
   public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>(); // Telescope Setup
@@ -157,14 +160,11 @@ public class RobotContainer {
 
 
   private void configureButtonBindings() {
-    /* ==================== DRIVER BUTTONS ==================== 
+    /* ==================== DRIVER BUTTONS ==================== */
 
     driverLB.onTrue(new DriveResetGyroToZero());
-    driverA.whileTrue(new ShoulderMoveOffset(0.5));
-    driverB.whileTrue(new ShoulderMoveOffset(-0.5));
-
-    driverStart.toggleOnTrue(new DriveFieldRelative(false));
-    driverBack.toggleOnTrue(new DriveFieldRelativeAdvanced(false));
+    driverStart.toggleOnTrue(new DriveRobotCentricDPAD(false));
+    driverBack.toggleOnTrue(new DriveFieldRelative(false));
     //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
     /* =================== CODRIVER BUTTONS =================== 
@@ -182,14 +182,15 @@ public class RobotContainer {
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
     coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
+    coDriverStart.toggleOnTrue(new WristToggleLock());
     coDriverX.whileTrue(new ClawMove(-Constants.clawSpeed)).onFalse(new ClawStop());
     coDriverY.whileTrue(new ClawMove(Constants.clawSpeed)).onFalse(new ClawStop());
     coDriverDUp.whileTrue(new WristMove(Constants.wristSpeed)).onFalse(new WristStop());
     coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
     coDriverRB.whileTrue(new TelescopeMove(Constants.telescopeSpeed)).onFalse(new TelescopeStop());
     coDriverLB.whileTrue(new TelescopeMove(-Constants.telescopeSpeed)).onFalse(new TelescopeStop());
-    coDriverA.onTrue(new ShoulderMoveOffset(Constants.shoulderOffsetSpeed)).onFalse(Commands.runOnce(() -> ShoulderMoveOffset.INSTANCE.done = true));
-    coDriverB.onTrue(new ShoulderMoveOffset(-Constants.shoulderOffsetSpeed)).onFalse(Commands.runOnce(() -> ShoulderMoveOffset.INSTANCE.done = true));
+    coDriverA.whileTrue(new ShoulderMoveOffset(Constants.shoulderOffsetSpeed));
+    coDriverB.whileTrue(new ShoulderMoveOffset(-Constants.shoulderOffsetSpeed));
 
     //coDriverDUp.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
     //coDriverDDown.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
@@ -214,16 +215,15 @@ public class RobotContainer {
   }
 
   private void configureSwerveSetup() {
-    setupSwerveChooser.addOption("D Physical", new DriveAdjustModulesManually());
-    setupSwerveChooser.addOption("D To Zero", new DriveResetAllModulePositionsToZero());
-    setupSwerveChooser.addOption("D Module 0", new DriveOneModule(0));
-    setupSwerveChooser.addOption("D Module 1", new DriveOneModule(1));
-    setupSwerveChooser.addOption("D Module 2", new DriveOneModule(2));
-    setupSwerveChooser.addOption("D Module 3", new DriveOneModule(3));
-    setupSwerveChooser.addOption("D Pos Only", new DriveAllModulesPositionOnly());
-    setupSwerveChooser.addOption("D Stop", new DriveStopAllModules());
-    setupSwerveChooser.addOption("Turn to Angle", new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
-    SmartDashboard.putData(setupSwerveChooser);
+    SmartDashboard.putData(new DriveAdjustModulesManually());
+    SmartDashboard.putData(new DriveResetAllModulePositionsToZero());
+    SmartDashboard.putData(new DriveOneModule(0));
+    SmartDashboard.putData(new DriveOneModule(1));
+    SmartDashboard.putData(new DriveOneModule(2));
+    SmartDashboard.putData(new DriveOneModule(3));
+    SmartDashboard.putData(new DriveAllModulesPositionOnly());
+    SmartDashboard.putData(new DriveStopAllModules());
+    SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
   }
 
   private void configureSetupModes() {
@@ -234,6 +234,7 @@ public class RobotContainer {
     SmartDashboard.putData(new WristSetup());
     SmartDashboard.putData(new SetArmBrake());
     SmartDashboard.putData(new SetArmCoast());
+    SmartDashboard.putData("Drive Straight", Commands.sequence(Autos.autoDriveStraight()));
 
     /* Shoulder */
     setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());

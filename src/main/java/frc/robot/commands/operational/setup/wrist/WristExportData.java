@@ -30,7 +30,11 @@ public class WristExportData extends CommandBase {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        RobotContainer.armSubsystem.toggleDumping(DumpMode.WRIST);
+        try {
+            RobotContainer.armSubsystem.toggleDumping(DumpMode.WRIST);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
   
     @Override
