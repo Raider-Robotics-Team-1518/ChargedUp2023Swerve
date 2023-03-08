@@ -78,6 +78,9 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    // set the first shoulder target to what it currently is so we arent
+    // "jumping" - Kevin Schlegel 2023
+    RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.getShoulderPosition());
   }
 
   /** This function is called periodically during operator control. */

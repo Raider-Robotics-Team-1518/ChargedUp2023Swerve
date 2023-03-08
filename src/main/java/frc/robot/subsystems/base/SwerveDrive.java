@@ -109,6 +109,14 @@ public class SwerveDrive extends SubsystemBase {
 
   }
 
+  public void setChassisSpeeds(ChassisSpeeds speeds) {
+    SwerveModuleState[] states = driveKinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, 1.0d);
+    for (int i = 0; i < states.length; i++) {
+        swerveModules[i].setModuleState(states[i], false);
+    }
+  }
+
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, 1.0d);
     //pass along SwerveModuleStates to SwerveModules and pass along boolean isVeloMode

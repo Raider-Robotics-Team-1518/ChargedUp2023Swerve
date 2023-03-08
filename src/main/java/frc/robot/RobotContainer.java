@@ -189,8 +189,8 @@ public class RobotContainer {
     coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
     coDriverRB.whileTrue(new TelescopeMove(Constants.telescopeSpeed)).onFalse(new TelescopeStop());
     coDriverLB.whileTrue(new TelescopeMove(-Constants.telescopeSpeed)).onFalse(new TelescopeStop());
-    coDriverA.whileTrue(new ShoulderMoveOffset(Constants.shoulderOffsetSpeed));
-    coDriverB.whileTrue(new ShoulderMoveOffset(-Constants.shoulderOffsetSpeed));
+    coDriverA.whileTrue(new ShoulderMoveOffset(Constants.shoulderUpSpeed));
+    coDriverB.whileTrue(new ShoulderMoveOffset(-Constants.shoulderDownSpeed));
 
     //coDriverDUp.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));
     //coDriverDDown.whileTrue(Commands.runOnce(() -> armSubsystem.getWristMotor().set(-Constants.wristSpeed))).onFalse(Commands.runOnce(() -> armSubsystem.getWristMotor().set(0.0d)));

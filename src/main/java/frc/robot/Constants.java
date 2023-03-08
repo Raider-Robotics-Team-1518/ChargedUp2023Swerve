@@ -43,7 +43,8 @@ public final class Constants {
 
      /* Teleoperated */
      public static final double telescopeSpeed = 0.5d;
-     public static final double shoulderOffsetSpeed = 0.5d;
+     public static final double shoulderUpSpeed = 0.5d;
+     public static final double shoulderDownSpeed = 0.375d;
      public static final double wristSpeed = 0.25d;
      public static final double clawSpeed = 1d;
 
@@ -126,10 +127,10 @@ public final class Constants {
 
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 
-    /* Swerve Move Wheel PIDF constants */ //TODO:Tune these
-    public static final double SWERVE_DRIVE_P_VALUE = 0.0; 
+    /* Swerve Move Wheel PIDF constants */
+    public static final double SWERVE_DRIVE_P_VALUE = 0.28365; 
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
-    public static final double SWERVE_DRIVE_D_VALUE = 0.0;
+    public static final double SWERVE_DRIVE_D_VALUE = 0.0253;
     public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
 
     /* Swerve Module Rotation constants */ 
