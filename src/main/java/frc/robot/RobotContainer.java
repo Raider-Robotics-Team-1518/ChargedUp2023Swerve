@@ -28,6 +28,7 @@ import frc.robot.commands.autonomous.telescope.AutoTelescopeRetract;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristCarrying;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristGrabbing;
 import frc.robot.commands.drive.DriveFieldRelative;
+import frc.robot.commands.drive.DriveFieldRelativeAdvanced;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveRobotCentricDPAD;
 import frc.robot.commands.drive.DriveStopAllModules;
@@ -63,6 +64,7 @@ import frc.robot.commands.operational.wrist.WristMove;
 import frc.robot.commands.operational.wrist.WristStop;
 import frc.robot.commands.operational.wrist.WristToggleLock;
 import frc.robot.commands.struct.Autos;
+import frc.robot.subsystems.base.Lights;
 import frc.robot.subsystems.base.SwerveDrive;
 import frc.robot.subsystems.moving.ArmSubsystem;
 import frc.robot.subsystems.moving.ClawSubsystem;
@@ -129,6 +131,8 @@ public class RobotContainer {
   public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>(); // Wrist Setup
   public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>(); // Telescope Setup
 
+  /* LED Lights */
+  public static Lights m_blinkies = new Lights();
 
   public RobotContainer() {
     armSubsystem = new ArmSubsystem();

@@ -45,7 +45,6 @@ public class DriveRobotCentricDPAD extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.setDriverRumble(0.25, 0.25);
     //pull primary stick values, and put to awaySpeed and lateralSpeed doubles
     double forwardSpeed = Robot.robotContainer.getDriverAxis(Axis.kLeftY);
     forwardSpeed *= 0.5;
@@ -55,9 +54,9 @@ public class DriveRobotCentricDPAD extends CommandBase {
     if(Math.abs(Robot.robotContainer.getDriverAxis(Axis.kRightY))>.1 ||
       Math.abs(Robot.robotContainer.getDriverAxis(Axis.kRightX))>.1){
       //if secondary sticks used, replace with secondary sticks witha slow factor
-      forwardSpeed = Robot.robotContainer.getDriverAxis(Axis.kRightY)*.5;
+      forwardSpeed = Robot.robotContainer.getDriverAxis(Axis.kRightY)*.375;
       forwardSpeed *= 0.5;
-      strafeSpeed = Robot.robotContainer.getDriverAxis(Axis.kRightX)*.5;
+      strafeSpeed = Robot.robotContainer.getDriverAxis(Axis.kRightX)*.375;
       strafeSpeed *= 0.5;
     }
     //create rotation speed from gamepad triggers

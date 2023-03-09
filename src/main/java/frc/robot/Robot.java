@@ -59,6 +59,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    RobotContainer.swerveDrive.resetGyro();
     autonomousCommand = RobotContainer.autoChooser.getSelected();
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
@@ -78,6 +79,8 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    
+    RobotContainer.swerveDrive.resetGyro();
     // set the first shoulder target to what it currently is so we arent
     // "jumping" - Kevin Schlegel 2023
     RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.getShoulderPosition());
