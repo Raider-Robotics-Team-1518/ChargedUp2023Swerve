@@ -31,29 +31,30 @@ public final class Constants {
                                                                    // with the lower switch pos being considered 0 degrees and 0 encoder position
     public static final double ARM_SHOULDER_LOWERSWITCH_DEG = 22d; // Degrees offset from the tower to the lower switch
 
-    public static final int ARM_WRIST_ID = 32; // Neo 550
+    public static final int ARM_WRIST_ID = 666; // Neo 550
 
     public static final int ARM_TELESCOPE_ID = 31; // Neo 550
 
-    public static final int ARM_CLAW_ID = 11; // HD Hex Motor
+    public static final int ARM_CLAW_ID1 = 33; // left
+
+    public static final int ARM_CLAW_ID2 = 32; // right
 
     /*
      * Static Motor Set Speeds
      */
 
      /* Teleoperated */
-     public static final double telescopeSpeed = 0.5d;
-     public static final double shoulderUpSpeed = 0.5d;
-     public static final double shoulderDownSpeed = 0.375d;
+     public static final double telescopeSpeed = 1.0d;
+     public static final double shoulderUpSpeed = 0.425d;
+     public static final double shoulderDownSpeed = 0.2125d;
      public static final double wristSpeed = 0.25d;
-     public static final double clawSpeed = 1d;
+     public static final double clawFeedSpeed = 0.5d;
+     public static final double clawDropSpeed = 0.5d;
 
      /* Autonomous */
      public static final double autoTelescopeSpeed = 0.5d;
      public static final double autoClawSpeed = 0.25d;
      public static final double autoWristSpeed = 0.25d;
-
-     public static final double clawFeedSpeed = 0.0625d;
 
 
 
@@ -137,17 +138,17 @@ public final class Constants {
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 
     /* Swerve Move Wheel PIDF constants */
-    public static final double SWERVE_DRIVE_P_VALUE = 0.28365; 
+    public static final double SWERVE_DRIVE_P_VALUE = 0.0325; //0.0325
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
-    public static final double SWERVE_DRIVE_D_VALUE = 0.0253;
+    public static final double SWERVE_DRIVE_D_VALUE = 0.00089375; // 0.00089375
     public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
 
     /* Swerve Module Rotation constants */ 
     public static final double RAD_TO_ENC_CONV_FACTOR = 8344.5488;// (1outputRev/(2*3.1415 radians)) * (12.8 motorRev / 1 outputRev) * (4096 u / 1 motorRev)
     /* PID Constants for rotation of the swerve module */
-    public static final double SWERVE_ROT_P_VALUE = 0.1;
+    public static final double SWERVE_ROT_P_VALUE = 0.1; // -0.025
     public static final double SWERVE_ROT_I_VALUE = 0.0;
-    public static final double SWERVE_ROT_D_VALUE = 0.05;
+    public static final double SWERVE_ROT_D_VALUE = 0.05;  // 0.05
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;
     public static final double SWERVE_ROT_FF_VALUE = 0.0;
     

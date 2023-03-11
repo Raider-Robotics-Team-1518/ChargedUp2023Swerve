@@ -6,6 +6,7 @@ import java.io.FileWriter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class DriveRotationExport extends CommandBase {
@@ -28,6 +29,7 @@ public class DriveRotationExport extends CommandBase {
     public void initialize() {
         RobotContainer.swerveDrive.stopAllModules();
         RobotContainer.swerveDrive.resetPose();
+        RobotContainer.swerveDrive.zeroModulePosSensor(0);
         time = -1L;
         inputSpeed = 0.0d;
         setupFileWriting();
@@ -37,6 +39,9 @@ public class DriveRotationExport extends CommandBase {
     public void execute() {
         // we kinda have to do a cluster of if statements because the file writing needs to be happening continuously 
         // aka i just forgot how threads work and im lazy lol
+        if(time == -1L) {
+            time = System.currentTimeMillis();
+        }
         doSteps();
         writeData(inputSpeed, RobotContainer.swerveDrive.getAllAbsModuleAnglesRad()[0]);
     }
@@ -57,64 +62,43 @@ public class DriveRotationExport extends CommandBase {
     private void doSteps() {
         firstStep();
         secondStep();
-        thirdStep();
-        fourthStep();
     }
 
     private void firstStep() {
-        if(isInTimeRange(0.0d, 3.5d)) {
+        if(isInTimeRange(0.0d, 1.0d)) {
             RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(3.5d, 7.0d)) {
+        } else if(isInTimeRange(1.0d, 2.0d)) {
             inputSpeed = rotateFactorOne;
             RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(7.0d, 10.5d)) {
+        } else if(isInTimeRange(2.0d, 3.0d)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
         }
     }
 
     private void secondStep() {
-        if(isInTimeRange(10.5d, 14.0d)) {
+        if(isInTimeRange(3.0d, 4.0d)) {
             inputSpeed = -rotateFactorOne;
             RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(14.0d, 17.5d)) {
+        } else if(isInTimeRange(4.0d, 5.0d)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        }
-    }
-
-    private void thirdStep() {
-        if(isInTimeRange(17.5d, 21.0d)) {
-            inputSpeed = rotateFactorTwo;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(21.0d, 24.5d)) {
-            inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        }
-    }
-
-    private void fourthStep() {
-        if(isInTimeRange(24.5d, 28.0d)) {
-            inputSpeed = -rotateFactorTwo;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(28.0d, 31.5d)) {
-            inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
+        } else if(isInTimeRange(6.0d, 100.0d)) {
+            this.end(true);
         }
     }
 
     private boolean isInTimeRange(double min, double max) {
-        // the time field is in terms of time as milliseconds
-        // min and max are in terms of seconds
         long difference = System.currentTimeMillis()-time;
-        double diffTermsOfSecs = difference/1000;
-        return (diffTermsOfSecs >= min && diffTermsOfSecs < max);
+        long minTermsMilli = (long) (min*1000L);
+        long maxTermsMilli = (long) (max*1000L);
+        return (difference >= minTermsMilli && difference < maxTermsMilli);
     }
 
     private void writeData(double input, double rotOut) {
         long difference = System.currentTimeMillis()-time;
         try{
-        writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(rotOut));
+            writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(rotOut) + "\n");
         } catch(Exception exception) {
             System.out.println("DriveRotationExport: Error writing motion data");
             exception.printStackTrace();

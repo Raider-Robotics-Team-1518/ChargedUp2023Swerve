@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     RobotContainer.swerveDrive.resetGyro();
     // set the first shoulder target to what it currently is so we arent
     // "jumping" - Kevin Schlegel 2023
-    RobotContainer.armSubsystem.shoulderPidController.setSetpoint(RobotContainer.armSubsystem.getShoulderPosition());
+    RobotContainer.armSubsystem.setShoulderTargetPos(RobotContainer.armSubsystem.getShoulderPosition(), false);
   }
 
   /** This function is called periodically during operator control. */

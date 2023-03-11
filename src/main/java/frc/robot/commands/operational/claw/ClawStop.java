@@ -1,7 +1,5 @@
 package frc.robot.commands.operational.claw;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 
@@ -19,7 +17,7 @@ public class ClawStop extends CommandBase {
   
     @Override
     public void execute() {
-        RobotContainer.clawSubsystem.getClawMotor().set(ControlMode.PercentOutput, 0.0d);
+        RobotContainer.clawSubsystem.setClawSpeed(0.0d);
     }
   
     @Override

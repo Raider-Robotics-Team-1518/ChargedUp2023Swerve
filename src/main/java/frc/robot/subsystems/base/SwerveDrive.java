@@ -126,18 +126,12 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public void simpleDriveRotationControlPercent(double rotSpeed) {
-    driveRobotCentric(
-        0.0d,
-        0.0d,
-        rotSpeed*-Constants.DRIVER_SPEED_SCALE_ROTATIONAL,
-        false,
-        true
-    );
+      swerveModules[0].setRotationMotor(rotSpeed);
   }
 
   public void simpleDriveControlPercent(double speed) {
     driveRobotCentric(
-        speed*Constants.DRIVER_SPEED_SCALE_LINEAR,
+        speed,
         0.0d,
         0.0d,
         false,
@@ -468,6 +462,10 @@ public class SwerveDrive extends SubsystemBase {
       //call the zero position method
       swerveModules[i].zeroAbsPositionSensor();
     }
+  }
+
+  public void zeroModulePosSensor(int modNumber){
+      swerveModules[modNumber].zeroAbsPositionSensor();
   }
 
   /**

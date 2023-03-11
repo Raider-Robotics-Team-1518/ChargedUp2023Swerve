@@ -125,6 +125,16 @@ public class SwerveModule {
     }
 
     /**
+     * Set the speed of the rotation motor in percent duty cycle
+     * 
+     * @param dutyCycle a number between -1.0 and 1.0, where 0.0 is not moving, as
+     *                  percent duty cycle
+     */
+    public void setRotationMotor(double dutyCycle) {
+        rotationMotor.set(TalonFXControlMode.PercentOutput, dutyCycle );
+    }
+
+    /**
      * Set the speed of the drive motor in meter per second, this relies on the
      * PIDController built into the TalonFX.
      * 
@@ -133,6 +143,8 @@ public class SwerveModule {
     public void setDriveSpeed(double speed) {
         driveMotor.set(TalonFXControlMode.Velocity, speed );
     }
+
+    
 
    /**
      * Sets drive motor to brake or coast

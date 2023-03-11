@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.autonomous.claw.AutoCloseClaw;
-import frc.robot.commands.autonomous.claw.AutoOpenClaw;
+import frc.robot.commands.autonomous.claw.AutoDropObjectClaw;
+import frc.robot.commands.autonomous.claw.AutoFeedClaw;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderGrabbing;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderPlacing;
@@ -36,6 +36,8 @@ import frc.robot.commands.drive.util.DriveAllModulesPositionOnly;
 import frc.robot.commands.drive.util.DriveOneModule;
 import frc.robot.commands.drive.util.DriveResetAllModulePositionsToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
+import frc.robot.commands.drive.util.pid.DriveRotationExport;
+import frc.robot.commands.drive.util.pid.DriveTranslationExport;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
 import frc.robot.commands.operational.setup.general.SetArmBrake;
@@ -151,8 +153,8 @@ public class RobotContainer {
     Constants.autonomousEventMap.put("toggleWristLock", new WristToggleLock());
     Constants.autonomousEventMap.put("extendTelescope", new AutoTelescopeExtend());
     Constants.autonomousEventMap.put("retractTelescope", new AutoTelescopeRetract());
-    Constants.autonomousEventMap.put("openClaw", new AutoOpenClaw());
-    Constants.autonomousEventMap.put("closeClaw", new AutoCloseClaw());
+    Constants.autonomousEventMap.put("feedClaw", new AutoFeedClaw());
+    Constants.autonomousEventMap.put("dropObjectClaw", new AutoDropObjectClaw());
     Constants.autonomousEventMap.put("rotateToPlacePosShoulder", new AutoRotateShoulderPlacing());
     Constants.autonomousEventMap.put("rotateToGrabPosShoulder", new AutoRotateShoulderGrabbing());
     Constants.autonomousEventMap.put("rotateToCarryPosShoulder", new AutoRotateShoulderCarrying());
@@ -184,10 +186,11 @@ public class RobotContainer {
 
     coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
     coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
-    coDriverStart.toggleOnTrue(new WristToggleLock());
-    coDriverX.whileTrue(new ClawMove(-Constants.clawSpeed)).onFalse(new ClawStop());
-    coDriverY.whileTrue(new ClawMove(Constants.clawSpeed)).onFalse(new ClawStop());
-    coDriverDUp.whileTrue(new WristMove(Constants.wristSpeed)).onFalse(new WristStop());
+    //coDriverStart.toggleOnTrue(new WristToggleLock());
+    coDriverX.whileTrue(new ClawMove(Constants.clawFeedSpeed)).onFalse(new ClawStop());
+    coDriverY.whileTrue(new ClawMove(-Constants.clawDropSpeed)).onFalse(new ClawStop());
+    //coDriverY.whileTrue(new ClawMove(Constants.clawSpeed)).onFalse(new ClawStop());
+    //coDriverDUp.whileTrue(new WristMove(Constants.wristSpeed)).onFalse(new WristStop());
     coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
     coDriverRB.whileTrue(new TelescopeMove(Constants.telescopeSpeed)).onFalse(new TelescopeStop());
     coDriverLB.whileTrue(new TelescopeMove(-Constants.telescopeSpeed)).onFalse(new TelescopeStop());
@@ -226,6 +229,11 @@ public class RobotContainer {
     SmartDashboard.putData(new DriveAllModulesPositionOnly());
     SmartDashboard.putData(new DriveStopAllModules());
     SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
+
+    // 1518
+    SmartDashboard.putData(new DriveTranslationExport());
+    SmartDashboard.putData(new DriveRotationExport());
+    SmartDashboard.putData("Drive Straight", Commands.sequence(Autos.autoDriveStraight()));
   }
 
   private void configureSetupModes() {
@@ -236,7 +244,6 @@ public class RobotContainer {
     SmartDashboard.putData(new WristSetup());
     SmartDashboard.putData(new SetArmBrake());
     SmartDashboard.putData(new SetArmCoast());
-    SmartDashboard.putData("Drive Straight", Commands.sequence(Autos.autoDriveStraight()));
 
     /* Shoulder */
     setupShoulderChooser.addOption("Find Max/Mins", new ShoulderSetMaxMin());

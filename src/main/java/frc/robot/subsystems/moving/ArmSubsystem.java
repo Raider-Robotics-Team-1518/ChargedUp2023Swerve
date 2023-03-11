@@ -53,6 +53,7 @@ public class ArmSubsystem extends SubsystemBase {
     public String wristDumpFile = "/home/lvuser/motion/wirst_motion_data.csv";
     public BufferedWriter writer;
     private long start = -1L;
+    private double currentShoulderSetpoint;
 
     public static ArmSubsystem INSTANCE;
     public ArmSubsystem() {
@@ -62,6 +63,7 @@ public class ArmSubsystem extends SubsystemBase {
         setArmBrake();
 
         // shoulder pid setup
+        currentShoulderSetpoint = 15d;
         setShoulderTargetPos(15, true);
         shoulderPidController.setTolerance(0.1);
 
@@ -119,11 +121,14 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void offsetShoulder(double offset) {
-        if(offset < 0) {
-            double target = shoulderPidController.getSetpoint()+offset;
-            shoulderPidController.setSetpoint(target);
+        if(offset > 0) {
+            // going up limit
+            if(getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) offset = 0.0d;
+        } else {
+            // going down limit
+            if(getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) offset = 0.0d;
         }
-        shoulderPidController.setSetpoint(shoulderPidController.getSetpoint()+offset);
+        currentShoulderSetpoint = currentShoulderSetpoint+offset;
     }
 
     public void setArmCoast() {
@@ -170,7 +175,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void setShoulderTargetPos(double target, boolean angle) {
         double targetPos = target;
         if(angle) targetPos = ((target/180)*maxShoulderPos);
-        shoulderPidController.setSetpoint(targetPos);
+        currentShoulderSetpoint = targetPos;
     }
 
     public void fixateArm() {
@@ -190,8 +195,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void fixateShoulder() {
+        double motorOut = shoulderPidController.calculate(getShoulderPosition(), currentShoulderSetpoint);
         if(!shoulderPidController.atSetpoint()) {
-            shoulderMotor.set(shoulderPidController.calculate(this.getShoulderPosition(), shoulderPidController.getSetpoint()));
+            shoulderMotor.set(motorOut);
         } else {
             shoulderMotor.set(0);
         }

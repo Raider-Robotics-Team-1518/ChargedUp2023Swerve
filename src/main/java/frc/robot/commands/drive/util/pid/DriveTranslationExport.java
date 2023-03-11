@@ -14,8 +14,8 @@ public class DriveTranslationExport extends CommandBase {
     private String swerveDumpFile = swerveDumpFolder+"/translation_export.csv";
     private long time;
 
-    double driveFactorOne = Constants.MINIMUM_DRIVE_SPEED;
-    double driveFactorTwo = Constants.MINIMUM_DRIVE_SPEED*2;
+    double driveFactorOne = Constants.MINIMUM_DRIVE_DUTY_CYCLE;
+    double driveFactorTwo = Constants.MINIMUM_DRIVE_DUTY_CYCLE*2;
     double inputSpeed = 0.0d;
 
     public DriveTranslationExport() {
@@ -35,6 +35,9 @@ public class DriveTranslationExport extends CommandBase {
   
     @Override
     public void execute() {
+        if(time == -1L) {
+            time = System.currentTimeMillis();
+        }
         // we kinda have to do a cluster of if statements because the file writing needs to be happening continuously 
         // aka i just forgot how threads work and im lazy lol
         doSteps();
@@ -66,6 +69,7 @@ public class DriveTranslationExport extends CommandBase {
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
         } else if(isInTimeRange(3.5d, 7.0d)) {
             inputSpeed = driveFactorOne;
+            System.out.println(inputSpeed);
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
         } else if(isInTimeRange(7.0d, 10.5d)) {
             inputSpeed = 0.0d;
@@ -100,21 +104,22 @@ public class DriveTranslationExport extends CommandBase {
         } else if(isInTimeRange(28.0d, 31.5d)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
+        } else if(isInTimeRange(31.5d, 100.0d)) {
+            this.end(false);
         }
     }
 
     private boolean isInTimeRange(double min, double max) {
-        // the time field is in terms of time as milliseconds
-        // min and max are in terms of seconds
         long difference = System.currentTimeMillis()-time;
-        double diffTermsOfSecs = difference/1000;
-        return (diffTermsOfSecs >= min && diffTermsOfSecs < max);
+        long minTermsMilli = (long) (min*1000L);
+        long maxTermsMilli = (long) (max*1000L);
+        return (difference >= minTermsMilli && difference < maxTermsMilli);
     }
 
     private void writeData(double input, double xOut) {
         long difference = System.currentTimeMillis()-time;
         try{
-        writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(xOut));
+            writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(xOut) + "\n");
         } catch(Exception exception) {
             System.out.println("DriveTranslationExport: Error writing motion data");
             exception.printStackTrace();

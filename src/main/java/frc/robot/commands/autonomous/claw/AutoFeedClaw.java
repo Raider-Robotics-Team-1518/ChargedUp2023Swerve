@@ -11,7 +11,7 @@ public class AutoFeedClaw extends CommandBase {
 
     @Override
     public void execute() {
-        RobotContainer.clawSubsystem.enableClawMotor(Constants.clawFeedSpeed);
+        RobotContainer.clawSubsystem.setClawSpeed(Constants.clawFeedSpeed);
     }
 
     @Override

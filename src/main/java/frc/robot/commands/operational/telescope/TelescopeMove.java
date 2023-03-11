@@ -19,9 +19,9 @@ public class TelescopeMove extends CommandBase {
   
     @Override
     public void execute() {
-        if(RobotContainer.armSubsystem.canEnableTelescope(speed > 0)) {
+        //if(RobotContainer.armSubsystem.canEnableTelescope(speed > 0)) {
             RobotContainer.armSubsystem.setTelescopeSpeed(speed);
-        }
+        //}
     }
   
     @Override
