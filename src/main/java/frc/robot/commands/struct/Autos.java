@@ -34,6 +34,6 @@ public class Autos {
     }
 
     public static Command autoDriveStraight() {
-        return getFullAuto("DriveStraight", Constants.PATH_MAXIMUM_VELOCITY, Constants.MAXIMUM_ACCELERATION);
+        return getFullAuto("DriveStraight", Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION);
     }
 }
