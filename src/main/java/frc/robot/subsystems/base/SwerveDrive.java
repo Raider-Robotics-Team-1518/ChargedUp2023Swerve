@@ -125,6 +125,26 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
+  public void simpleDriveRotationControlPercent(double rotSpeed) {
+    driveRobotCentric(
+        0.0d,
+        0.0d,
+        rotSpeed*-Constants.DRIVER_SPEED_SCALE_ROTATIONAL,
+        false,
+        true
+    );
+  }
+
+  public void simpleDriveControlPercent(double speed) {
+    driveRobotCentric(
+        speed*Constants.DRIVER_SPEED_SCALE_LINEAR,
+        0.0d,
+        0.0d,
+        false,
+        false
+    );
+}
+
   /* =================== Module Drive Methods =================== */
 
   /**
@@ -347,6 +367,21 @@ public class SwerveDrive extends SubsystemBase {
     double[] moduleAngles = new double[4];
     for(int i=0; i<4; i++){
       moduleAngles[i]=swerveModules[i].getAbsPosInDeg();
+    }
+    return moduleAngles;
+  }
+
+  /**
+   * Returns all values from the module's absolute 
+   * encoders, and returns them in an array of 
+   * doubles, as RADIANS, in module order.
+   * 
+   * @return array of doubles, in radians
+   */
+  public double[] getAllAbsModuleAnglesRad(){
+    double[] moduleAngles = new double[4];
+    for(int i=0; i<4; i++){
+      moduleAngles[i]=swerveModules[i].getPosInRad();
     }
     return moduleAngles;
   }

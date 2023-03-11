@@ -98,6 +98,14 @@ public final class Constants {
 
      /* Path Planner Constants */
 
+     /* Center of Field Offsets */
+     public static final double FIELD_CENTER_X = 8.270875d;
+     public static final double FIELD_CENTER_Y = 4.00685d;
+
+     
+
+     
+
      /* Path Planner Event Map */
      public static HashMap<String, Command> autonomousEventMap = new HashMap<>();
      
@@ -124,6 +132,7 @@ public final class Constants {
     public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default
     public static final double PATH_MAXIMUM_VELOCITY = 3.5d;
     public static final double MAXIMUM_ACCELERATION = 1.25d;
+    public static final double PATH_MAXIMUM_ACCELERATION = 1.0d;
 
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 

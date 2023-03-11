@@ -28,7 +28,6 @@ import frc.robot.commands.autonomous.telescope.AutoTelescopeRetract;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristCarrying;
 import frc.robot.commands.autonomous.wrist.AutoRotateWristGrabbing;
 import frc.robot.commands.drive.DriveFieldRelative;
-import frc.robot.commands.drive.DriveFieldRelativeAdvanced;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveRobotCentricDPAD;
 import frc.robot.commands.drive.DriveStopAllModules;
@@ -36,7 +35,6 @@ import frc.robot.commands.drive.util.DriveAdjustModulesManually;
 import frc.robot.commands.drive.util.DriveAllModulesPositionOnly;
 import frc.robot.commands.drive.util.DriveOneModule;
 import frc.robot.commands.drive.util.DriveResetAllModulePositionsToZero;
-import frc.robot.commands.drive.util.DriveResetGyroToZero;
 import frc.robot.commands.drive.util.DriveTurnToAngleInRad;
 import frc.robot.commands.operational.claw.ClawMove;
 import frc.robot.commands.operational.claw.ClawStop;
@@ -166,7 +164,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* ==================== DRIVER BUTTONS ==================== */
 
-    driverLB.onTrue(new DriveResetGyroToZero());
+    //driverLB.onTrue(new DriveResetGyroToZero());
     driverStart.toggleOnTrue(new DriveRobotCentricDPAD(false));
     driverBack.toggleOnTrue(new DriveFieldRelative(false));
     //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));

@@ -37,13 +37,13 @@ public class DriveRobotCentric extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.setDriverRumble(0.25, 0.25);
+    //RobotContainer.setDriverRumble(0.25, 0.25);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.setDriverRumble(0.25, 0.25);
+    //RobotContainer.setDriverRumble(0.25, 0.25);
     //pull primary stick values, and put to awaySpeed and lateralSpeed doubles
     double forwardSpeed = Robot.robotContainer.getDriverAxis(Axis.kLeftY);
     forwardSpeed *= 0.5;
@@ -73,7 +73,7 @@ public class DriveRobotCentric extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.setDriverRumble(0.0, 0.0);
+    //RobotContainer.setDriverRumble(0.0, 0.0);
   }
 
   // Returns true when the command should end.
