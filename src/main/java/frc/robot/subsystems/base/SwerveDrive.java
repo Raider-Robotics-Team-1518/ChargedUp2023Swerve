@@ -102,6 +102,8 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Gyro", this.getGyroInDeg());
+    SmartDashboard.putNumber("XPos", getCurPose2d().getX());
+    SmartDashboard.putNumber("YPos", getCurPose2d().getY());
 
 
     //run odometry update on the odometry object
@@ -125,8 +127,8 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
-  public void simpleDriveRotationControlPercent(double rotSpeed) {
-      swerveModules[0].setRotationMotor(rotSpeed);
+  public void simpleDriveRotationControlPercent(double rotSpeed, int modNumber) {
+      swerveModules[modNumber].setRotationMotor(rotSpeed);
   }
 
   public void simpleDriveControlPercent(double speed) {
@@ -364,6 +366,15 @@ public class SwerveDrive extends SubsystemBase {
     }
     return moduleAngles;
   }
+
+  public double getContinuousRotAngle(int modNumber) {
+    return swerveModules[modNumber].getRotationSensorPosContinuous()/Constants.RAD_TO_ENC_CONV_FACTOR;
+  }
+
+  public void resetContinuousRotPos(int modNumber) {
+    swerveModules[modNumber].resetRotationSensorPosition();
+  }
+  
 
   /**
    * Returns all values from the module's absolute 

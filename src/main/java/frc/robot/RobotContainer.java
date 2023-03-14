@@ -234,6 +234,8 @@ public class RobotContainer {
     SmartDashboard.putData(new DriveTranslationExport());
     SmartDashboard.putData(new DriveRotationExport());
     SmartDashboard.putData("Drive Straight", Commands.sequence(Autos.autoDriveStraight()));
+    SmartDashboard.putData("Drive Horseshoe", Commands.sequence(Autos.autoHorseshoeTest()));
+    SmartDashboard.putData("Auto Spin Slide", Commands.sequence(Autos.autoSpinSlide()));
   }
 
   private void configureSetupModes() {

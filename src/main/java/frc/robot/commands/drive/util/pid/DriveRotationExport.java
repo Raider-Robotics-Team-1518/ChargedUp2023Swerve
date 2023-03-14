@@ -3,10 +3,10 @@ package frc.robot.commands.drive.util.pid;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class DriveRotationExport extends CommandBase {
@@ -29,7 +29,7 @@ public class DriveRotationExport extends CommandBase {
     public void initialize() {
         RobotContainer.swerveDrive.stopAllModules();
         RobotContainer.swerveDrive.resetPose();
-        RobotContainer.swerveDrive.zeroModulePosSensor(0);
+        RobotContainer.swerveDrive.resetContinuousRotPos(0);
         time = -1L;
         inputSpeed = 0.0d;
         setupFileWriting();
@@ -43,7 +43,7 @@ public class DriveRotationExport extends CommandBase {
             time = System.currentTimeMillis();
         }
         doSteps();
-        writeData(inputSpeed, RobotContainer.swerveDrive.getAllAbsModuleAnglesRad()[0]);
+        writeData(inputSpeed, RobotContainer.swerveDrive.getContinuousRotAngle(0));
     }
   
     @Override
@@ -62,28 +62,53 @@ public class DriveRotationExport extends CommandBase {
     private void doSteps() {
         firstStep();
         secondStep();
+        thirdStep();
+        fourthStep();
     }
 
     private void firstStep() {
-        if(isInTimeRange(0.0d, 1.0d)) {
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(1.0d, 2.0d)) {
+        if(isInTimeRange(0.0d, 3.5d)) {
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        } else if(isInTimeRange(3.5d, 7.0d)) {
             inputSpeed = rotateFactorOne;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(2.0d, 3.0d)) {
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        } else if(isInTimeRange(7.0d,10.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
         }
     }
 
     private void secondStep() {
-        if(isInTimeRange(3.0d, 4.0d)) {
+        if(isInTimeRange(10.5d, 14.0d)) {
             inputSpeed = -rotateFactorOne;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(4.0d, 5.0d)) {
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        } else if(isInTimeRange(14.0d, 17.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed);
-        } else if(isInTimeRange(6.0d, 100.0d)) {
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        }
+    }
+
+    private void thirdStep() {
+        if(isInTimeRange(17.5d, 21.0d)) {
+            inputSpeed = rotateFactorTwo;
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        }
+        if(isInTimeRange(21.0d, 24.5d)) {
+            inputSpeed = 0.0d;
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        }
+    }
+
+    private void fourthStep() {
+        if(isInTimeRange(24.5d, 28.0d)) {
+            inputSpeed = -rotateFactorTwo;
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        }
+        if(isInTimeRange(28.0d, 31.5d)) {
+            inputSpeed = 0.0d;
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+        } else if(isInTimeRange(31.5d, 100.0d)) {
+            inputSpeed = 0.0d;
             this.end(true);
         }
     }
@@ -97,8 +122,9 @@ public class DriveRotationExport extends CommandBase {
 
     private void writeData(double input, double rotOut) {
         long difference = System.currentTimeMillis()-time;
+        BigDecimal bd = BigDecimal.valueOf(difference).movePointLeft(3);
         try{
-            writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(rotOut) + "\n");
+            writer.append(String.valueOf(bd.doubleValue()) + "," + String.valueOf(input) + "," + String.valueOf(rotOut) + "\n");
         } catch(Exception exception) {
             System.out.println("DriveRotationExport: Error writing motion data");
             exception.printStackTrace();

@@ -30,10 +30,20 @@ public class Autos {
             driveSystem::setModuleStates,
             Constants.autonomousEventMap,
             driveSystem);
+
+        autoBuilder.resetPose(pathGroup.get(0));
         return autoBuilder.fullAuto(pathGroup);
     }
 
     public static Command autoDriveStraight() {
         return getFullAuto("DriveStraight", Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION);
+    }
+
+    public static Command autoHorseshoeTest() {
+        return getFullAuto("DriveHorseshoeTest", Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION);
+    }
+
+    public static Command autoSpinSlide() {
+        return getFullAuto("180SpinSlide", Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION);
     }
 }

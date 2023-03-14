@@ -48,7 +48,7 @@ public final class Constants {
      public static final double shoulderUpSpeed = 0.425d;
      public static final double shoulderDownSpeed = 0.2125d;
      public static final double wristSpeed = 0.25d;
-     public static final double clawFeedSpeed = 0.5d;
+     public static final double clawFeedSpeed = 0.375d;
      public static final double clawDropSpeed = 0.5d;
 
      /* Autonomous */
@@ -121,32 +121,38 @@ public final class Constants {
     public static final Rotation2d ROTATE_BY_PI = Rotation2d.fromDegrees(180);
 
     /* Swerve Module Positions */
-    public static final Translation2d FRONT_LEFT_POSITION = new Translation2d(.314325,.314325);//These are in meters
-    public static final Translation2d REAR_LEFT_POSITION = new Translation2d(-.314325,.314325);
-    public static final Translation2d REAR_RIGHT_POSITION = new Translation2d(-.314325,-.314325);
-    public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(.314325,-.314325); 
+    public static final Translation2d FRONT_LEFT_POSITION = new Translation2d(0.4826,0.4826);//These are in meters
+    public static final Translation2d REAR_LEFT_POSITION = new Translation2d(-0.4826,0.4826);
+    public static final Translation2d REAR_RIGHT_POSITION = new Translation2d(-0.4826,-0.4826);
+    public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(0.4826,-0.4826); 
 
     /* Swerve Module Drive Motor Constants */
-    public static final double DRIVE_ENC_TO_METERS_FACTOR = .0006343;//(1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev)
+    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.0000382966;
+    //(1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
+    // (1/(3.14159265*diameter))*(8.14)*(2048)
+    // 1024 units: 0.00253727785
+    // 2048 units: 0.00126863892
+    // 0.00037689945
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
     public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default
-    public static final double PATH_MAXIMUM_VELOCITY = 3.5d;
+    public static final double PATH_MAXIMUM_VELOCITY = 2.75d;
     public static final double MAXIMUM_ACCELERATION = 1.25d;
-    public static final double PATH_MAXIMUM_ACCELERATION = 1.0d;
+    public static final double PATH_MAXIMUM_ACCELERATION = 0.75d;
 
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 
     /* Swerve Move Wheel PIDF constants */
-    public static final double SWERVE_DRIVE_P_VALUE = 0.0325; //0.0325
+    public static final double SWERVE_DRIVE_P_VALUE = 0.2928; //0.0325
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
-    public static final double SWERVE_DRIVE_D_VALUE = 0.00089375; // 0.00089375
-    public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
+    public static final double SWERVE_DRIVE_D_VALUE = 0.007322; // 0.00089375
+    //public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
+    public static final double SWERVE_DRIVE_FF_VALUE = 0.0d;
 
     /* Swerve Module Rotation constants */ 
     public static final double RAD_TO_ENC_CONV_FACTOR = 8344.5488;// (1outputRev/(2*3.1415 radians)) * (12.8 motorRev / 1 outputRev) * (4096 u / 1 motorRev)
     /* PID Constants for rotation of the swerve module */
-    public static final double SWERVE_ROT_P_VALUE = 0.1; // -0.025
+    public static final double SWERVE_ROT_P_VALUE = 0.02; // -0.025
     public static final double SWERVE_ROT_I_VALUE = 0.0;
     public static final double SWERVE_ROT_D_VALUE = 0.05;  // 0.05
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;

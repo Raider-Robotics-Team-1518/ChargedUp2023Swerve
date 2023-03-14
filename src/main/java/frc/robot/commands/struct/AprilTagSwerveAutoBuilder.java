@@ -61,32 +61,9 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     @Override
     public CommandBase fullAuto(List<PathPlannerTrajectory> pathGroup) {
         List<CommandBase> commands = new ArrayList<>();
-        
-        Pose2d currentPoseFieldRelative = 
-            DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose2d_wpiRed("limelight") 
-            : LimelightHelpers.getBotPose2d_wpiRed("limelight");
 
-        // offset by center of field values to make it so that (0,0) is the bottom left corner
-        // this is needed because PathPlanner is not in terms of center of field
-        currentPoseFieldRelative.transformBy(new Transform2d(new Translation2d(0, 0), currentPoseFieldRelative.getRotation().unaryMinus()));
-        Pose2d fixedCurrentPos = currentPoseFieldRelative.transformBy(new Transform2d(new Translation2d(-Constants.FIELD_CENTER_X, -Constants.FIELD_CENTER_Y), Rotation2d.fromDegrees(0.0d)));
-        // perform the movement to starting position using AprilTags and Limelight
-        // This is used so that the bot can start at any position as long as an AprilTag is recognized
-        // by using those AprilTags we can get the bot's actual position and convert that
-        // to be able to be used by PathPlanner
-
-        if(currentPoseFieldRelative != null && fixedCurrentPos != null) {
-            Pose2d firstPathPose = pathGroup.get(0).getInitialPose();
-            Translation2d firstPoint = new Translation2d(firstPathPose.getX(), firstPathPose.getY());
-            Translation2d actualPos = new Translation2d(fixedCurrentPos.getX(), fixedCurrentPos.getY());
-            Translation2d differenceTranslation2d = firstPoint.minus(actualPos);
-            PathPlannerTrajectory aprilTagTrajectory = PathPlanner.generatePath(
-                new PathConstraints(Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION),
-                new PathPoint(new Translation2d(0.0d, 0.0d), Rotation2d.fromDegrees(0.0d)),
-                new PathPoint(differenceTranslation2d, Rotation2d.fromDegrees(0.0d)));
-            commands.add(resetPose(aprilTagTrajectory));
-            commands.add(followPathWithEvents(aprilTagTrajectory));
-        }
+        // our code
+        moveToPathStart(pathGroup, commands);
 
         // The rest is standard PathPlanner execution code
         commands.add(resetPose(pathGroup.get(0)));
@@ -99,5 +76,61 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
         commands.add(stopEventGroup(pathGroup.get(pathGroup.size() - 1).getEndStopEvent()));
     
         return Commands.sequence(commands.toArray(CommandBase[]::new));
+    }
+
+    private void moveToPathStart(List<PathPlannerTrajectory> pathGroup, List<CommandBase> commands) {
+        Pose2d currentPoseFieldRelative = getBotPosTeamRelative();
+        // offset by center of field values to make it so that (0,0) is the bottom left corner
+        // this is needed because PathPlanner is not in terms of center of field
+        Pose2d fixedCurrentPos = fieldRelativeToStandard(currentPoseFieldRelative);
+        // perform the movement to starting position using AprilTags and Limelight
+        // This is used so that the bot can start at any position as long as an AprilTag is recognized
+        // by using those AprilTags we can get the bot's actual position and convert that
+        // to be able to be used by PathPlanner
+
+        if(currentPoseFieldRelative != null && fixedCurrentPos != null) {
+            Pose2d firstPathPose = pathGroup.get(0).getInitialPose();
+            Translation2d translationDifference = getTranslationDifference(new Translation2d(firstPathPose.getX(), firstPathPose.getY()), new Translation2d(fixedCurrentPos.getX(), fixedCurrentPos.getY()));
+            PathPlannerTrajectory aprilTagTrajectory = PathPlanner.generatePath(
+                getPathConstraints(),
+                minimalisticPoint(zeroTranslation()),
+                minimalisticPoint(translationDifference));
+            simpleTrajectoryFollow(aprilTagTrajectory, commands);
+        }
+    }
+
+    private PathPoint minimalisticPoint(Translation2d translation2d) {
+        return new PathPoint(translation2d, Rotation2d.fromDegrees(0.0d));
+    }
+
+    private PathConstraints getPathConstraints() {
+       return new PathConstraints(Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION); 
+    }
+
+    private Translation2d zeroTranslation() {
+        return new Translation2d(0.0d, 0.0d);
+    }
+
+    private Translation2d getTranslationDifference(Translation2d start, Translation2d stop) {
+        Translation2d translation = start.minus(stop);
+        return translation;
+    }
+
+    private void simpleTrajectoryFollow(PathPlannerTrajectory trajectory, List<CommandBase> commands) {
+        trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+        commands.add(resetPose(trajectory));
+        commands.add(stopEventGroup(trajectory.getStartStopEvent()));
+        commands.add(followPathWithEvents(trajectory));
+    }
+
+    private Pose2d getBotPosTeamRelative() {
+        Pose2d botPos = DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose2d_wpiRed("limelight") 
+            : LimelightHelpers.getBotPose2d_wpiRed("limelight");
+        return botPos;
+    }
+
+    private Pose2d fieldRelativeToStandard(Pose2d pose2d) {
+        Pose2d newPos = pose2d.transformBy(new Transform2d(new Translation2d(-Constants.FIELD_CENTER_X, -Constants.FIELD_CENTER_Y), pose2d.getRotation().unaryMinus()));
+        return newPos;
     }
 }

@@ -3,6 +3,7 @@ package frc.robot.commands.drive.util.pid;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -41,8 +42,8 @@ public class DriveTranslationExport extends CommandBase {
         // we kinda have to do a cluster of if statements because the file writing needs to be happening continuously 
         // aka i just forgot how threads work and im lazy lol
         doSteps();
-        writeData(inputSpeed, RobotContainer.swerveDrive.getCurPose2d().getX());
-    }
+        writeData(inputSpeed, RobotContainer.swerveDrive.getCurPose2d().getTranslation().getX());
+    } 
   
     @Override
     public void end(boolean interrupted) {
@@ -118,8 +119,9 @@ public class DriveTranslationExport extends CommandBase {
 
     private void writeData(double input, double xOut) {
         long difference = System.currentTimeMillis()-time;
+        BigDecimal bd = BigDecimal.valueOf(difference).movePointLeft(3);
         try{
-            writer.append(String.valueOf(difference) + "," + String.valueOf(input) + "," + String.valueOf(xOut) + "\n");
+            writer.append(String.valueOf(bd.doubleValue()) + "," + String.valueOf(input) + "," + String.valueOf(xOut) + "\n");
         } catch(Exception exception) {
             System.out.println("DriveTranslationExport: Error writing motion data");
             exception.printStackTrace();

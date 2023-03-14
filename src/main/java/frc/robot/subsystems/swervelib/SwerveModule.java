@@ -292,6 +292,14 @@ public class SwerveModule {
         return new SwerveModulePosition(getDriveDistance(), getCurRot2d());
     }
 
+    public double getRotationSensorPosContinuous() {
+        return rotationMotor.getSelectedSensorPosition();
+    }
+
+    public void resetRotationSensorPosition() {
+        rotationMotor.setSelectedSensorPosition(0.0d);
+    }
+
     /**
      * This is a method meant for testing by getting the count from the 
      * rotational encoder which is internal to the NEO550. This encoder 

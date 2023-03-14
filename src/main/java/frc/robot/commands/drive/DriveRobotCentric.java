@@ -67,7 +67,7 @@ public class DriveRobotCentric extends CommandBase {
       rotSpeed*-Constants.DRIVER_SPEED_SCALE_ROTATIONAL,
       veloMode,
       false
-      );
+    );
   }
 
   // Called once the command ends or is interrupted.
