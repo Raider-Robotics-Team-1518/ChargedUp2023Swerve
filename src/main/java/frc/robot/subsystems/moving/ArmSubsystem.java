@@ -144,7 +144,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void setTelescopeSpeed(double speed) {
-        this.telescopeMotor.set(speed);
+        telescopeMotor.set(speed);
     }
 
     public void setupDumping() {

@@ -18,15 +18,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.PlaceMode;
+import frc.robot.commands.autonomous.AutoCommandGroups;
 import frc.robot.commands.autonomous.claw.AutoDropObjectClaw;
 import frc.robot.commands.autonomous.claw.AutoFeedClaw;
-import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
-import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderGrabbing;
-import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderPlacing;
-import frc.robot.commands.autonomous.telescope.AutoTelescopeExtend;
-import frc.robot.commands.autonomous.telescope.AutoTelescopeRetract;
-import frc.robot.commands.autonomous.wrist.AutoRotateWristCarrying;
-import frc.robot.commands.autonomous.wrist.AutoRotateWristGrabbing;
 import frc.robot.commands.drive.DriveFieldRelative;
 import frc.robot.commands.drive.DriveRobotCentric;
 import frc.robot.commands.drive.DriveRobotCentricDPAD;
@@ -62,7 +57,6 @@ import frc.robot.commands.operational.telescope.TelescopeMove;
 import frc.robot.commands.operational.telescope.TelescopeStop;
 import frc.robot.commands.operational.wrist.WristMove;
 import frc.robot.commands.operational.wrist.WristStop;
-import frc.robot.commands.operational.wrist.WristToggleLock;
 import frc.robot.commands.struct.Autos;
 import frc.robot.subsystems.base.Lights;
 import frc.robot.subsystems.base.SwerveDrive;
@@ -149,17 +143,26 @@ public class RobotContainer {
     CameraServer.startAutomaticCapture();
   }
 
+ /*
+     * (X, Y) End Positions for Out of way Paths
+     * OOW1: (4.90, 0.78)
+     * OOW2: (5.45, 2.85)
+     * OOW3/OOWAdvanced: (5.74, 3.60)
+     */
+
   private void configureAutonomousEventMap() {
-    Constants.autonomousEventMap.put("toggleWristLock", new WristToggleLock());
-    Constants.autonomousEventMap.put("extendTelescope", new AutoTelescopeExtend());
-    Constants.autonomousEventMap.put("retractTelescope", new AutoTelescopeRetract());
     Constants.autonomousEventMap.put("feedClaw", new AutoFeedClaw());
     Constants.autonomousEventMap.put("dropObjectClaw", new AutoDropObjectClaw());
-    Constants.autonomousEventMap.put("rotateToPlacePosShoulder", new AutoRotateShoulderPlacing());
-    Constants.autonomousEventMap.put("rotateToGrabPosShoulder", new AutoRotateShoulderGrabbing());
-    Constants.autonomousEventMap.put("rotateToCarryPosShoulder", new AutoRotateShoulderCarrying());
-    Constants.autonomousEventMap.put("rotateToGrabbingWrist", new AutoRotateWristGrabbing());
-    Constants.autonomousEventMap.put("rotateToCarryPosWrist", new AutoRotateWristCarrying());
+    Constants.autonomousEventMap.put("retractTelescope", AutoCommandGroups.retractTelescope());
+    Constants.autonomousEventMap.put("rotateArmIdle", AutoCommandGroups.rotateArmIdle());
+    Constants.autonomousEventMap.put("rotateArmGrabbing", AutoCommandGroups.rotateArmGrabbing());
+    Constants.autonomousEventMap.put("rotateArmCarrying", AutoCommandGroups.rotateArmCarrying());
+    Constants.autonomousEventMap.put("rotArmPlaceConeHigh", AutoCommandGroups.rotateArmPlacing(PlaceMode.HIGH_NODE_CONE));
+    Constants.autonomousEventMap.put("rotArmPlaceConeMid", AutoCommandGroups.rotateArmPlacing(PlaceMode.MID_NODE_CONE));
+    Constants.autonomousEventMap.put("rotArmPlaceConeLow", AutoCommandGroups.rotateArmPlacing(PlaceMode.LOW_NODE_CONE));
+    Constants.autonomousEventMap.put("rotArmPlaceCubeHigh", AutoCommandGroups.rotateArmPlacing(PlaceMode.HIGH_NODE_CUBE));
+    Constants.autonomousEventMap.put("rotArmPlaceCubeMid", AutoCommandGroups.rotateArmPlacing(PlaceMode.MID_NODE_CUBE));
+    Constants.autonomousEventMap.put("rotArmPlaceCubeLow", AutoCommandGroups.rotateArmPlacing(PlaceMode.LOW_NODE_CUBE));
   }
 
 
@@ -239,6 +242,16 @@ public class RobotContainer {
   }
 
   private void configureSetupModes() {
+    /*
+     * General Debugging/Measuring
+     */
+
+    SmartDashboard.putNumber("TelescopeSeconds", 0.0d);
+    SmartDashboard.putData(AutoCommandGroups.moveTelescopeSecondsTest());
+
+    SmartDashboard.putNumber("WantedAngle", 45d);
+    SmartDashboard.putData(AutoCommandGroups.moveShoulderTest());
+
     /* General Setup Commands */
     SmartDashboard.putData(new SetupToggle());
     SmartDashboard.putData(new ShoulderSetup());

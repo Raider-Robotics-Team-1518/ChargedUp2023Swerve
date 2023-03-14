@@ -27,8 +27,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.RobotContainer;
 
 public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
+
+    public Pose2d overrideStartPos;
 
     public AprilTagSwerveAutoBuilder(
         Supplier<Pose2d> poseSupplier,
@@ -63,6 +66,7 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
         List<CommandBase> commands = new ArrayList<>();
 
         // our code
+
         moveToPathStart(pathGroup, commands);
 
         // The rest is standard PathPlanner execution code
@@ -77,6 +81,23 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     
         return Commands.sequence(commands.toArray(CommandBase[]::new));
     }
+
+    public CommandBase onlyAprilTagMoveToStart(String pathName) {
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(pathName, getPathConstraints());
+        Pose2d currentPoseFieldRelative = getBotPosTeamRelative();
+        Pose2d fixedCurrentPos = fieldRelativeToStandard(currentPoseFieldRelative);
+        Translation2d translationDifference = getTranslationDifference(new Translation2d(trajectory.getInitialPose().getX(), trajectory.getInitialPose().getY()), new Translation2d(fixedCurrentPos.getX(), fixedCurrentPos.getY()));
+        PathPlannerTrajectory wantedTrajectory = PathPlanner.generatePath(getPathConstraints(), 
+            minimalisticPoint(zeroTranslation()),
+            minimalisticPoint(translationDifference));
+        return followPathWithEvents(wantedTrajectory);
+    }
+
+    public void resetOdometryAprilTag() {
+        RobotContainer.swerveDrive.driveOdometry.resetPosition(Rotation2d.fromDegrees(0.0d), RobotContainer.swerveDrive.getSwerveModulePositions(), getBotPosTeamRelative());
+    }
+
+
 
     private void moveToPathStart(List<PathPlannerTrajectory> pathGroup, List<CommandBase> commands) {
         Pose2d currentPoseFieldRelative = getBotPosTeamRelative();
@@ -117,8 +138,12 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     }
 
     private void simpleTrajectoryFollow(PathPlannerTrajectory trajectory, List<CommandBase> commands) {
-        trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
-        commands.add(resetPose(trajectory));
+        // trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+        // TODO: ^ !! NEEDED FOR COMPETITON !!
+
+        // use this instead of resetPose command, seems to work more accurately for what we are doing
+        RobotContainer.swerveDrive.driveOdometry.resetPosition(trajectory.getInitialState().holonomicRotation, RobotContainer.swerveDrive.getSwerveModulePositions(), trajectory.getInitialState().poseMeters);
+        // commands.add(resetPose(trajectory));
         commands.add(stopEventGroup(trajectory.getStartStopEvent()));
         commands.add(followPathWithEvents(trajectory));
     }

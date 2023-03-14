@@ -127,6 +127,17 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
+  public void setModulesVelocityToDutyCycle(SwerveModuleState[] states) {
+    for (int i = 0; i < states.length; i++) {
+      states[i].speedMetersPerSecond = states[i].speedMetersPerSecond/Constants.MOTOR_MAXIMUM_VELOCITY;
+    }
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, 1.0d);
+    //pass along SwerveModuleStates to SwerveModules and pass along boolean isVeloMode
+    for (int i = 0; i < states.length; i++) {
+        swerveModules[i].setModuleState(states[i], false);
+    }
+  }
+
   public void simpleDriveRotationControlPercent(double rotSpeed, int modNumber) {
       swerveModules[modNumber].setRotationMotor(rotSpeed);
   }

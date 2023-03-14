@@ -135,15 +135,15 @@ public final class Constants {
     // 0.00037689945
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
-    public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default
+    public static final double MOTOR_MAXIMUM_VELOCITY = 4.1; // 4.62 default
     public static final double PATH_MAXIMUM_VELOCITY = 2.75d;
     public static final double MAXIMUM_ACCELERATION = 1.25d;
-    public static final double PATH_MAXIMUM_ACCELERATION = 0.75d;
+    public static final double PATH_MAXIMUM_ACCELERATION = 1.25;
 
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 
     /* Swerve Move Wheel PIDF constants */
-    public static final double SWERVE_DRIVE_P_VALUE = 0.2928; //0.0325
+    public static final double SWERVE_DRIVE_P_VALUE = 0.2928; //0.2928
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
     public static final double SWERVE_DRIVE_D_VALUE = 0.007322; // 0.00089375
     //public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
@@ -206,7 +206,28 @@ public final class Constants {
     
     /* Digital Input */
 
+    public enum PlaceMode {
+      LOW_NODE_CONE(99, 0.25),
+      MID_NODE_CONE(90, 0.5),
+      HIGH_NODE_CONE(90, 1),
+      LOW_NODE_CUBE(90, 0.25),
+      MID_NODE_CUBE(90, 0.5),
+      HIGH_NODE_CUBE(90, 1);
 
+      private final double angle, waitTime;
+      private PlaceMode(double angle, double waitTime) {
+        this.angle = angle;
+        this.waitTime = waitTime;
+      }
+
+      public double getAngle() {
+        return this.angle;
+      }
+
+      public double getWaitTime() {
+        return this.waitTime;
+      }
+    }
 
     public static void updateDouble(String key, double newValue) {
       try { Preferences.remove(key); } catch(Exception exception) {}

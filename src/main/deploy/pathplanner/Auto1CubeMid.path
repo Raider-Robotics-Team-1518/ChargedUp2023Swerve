@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.1149170869770315,
-        "y": 1.6175659494176136
+        "x": 2.216313182626366,
+        "y": 2.727753788840912
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1311634883482857,
-        "y": 1.6175659494176136
+        "x": 2.216313182626366,
+        "y": 2.727753788840912
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
@@ -16,30 +16,35 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "rotArmPlaceCubeHigh"
+        ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "before",
+        "waitTime": 1.0
       }
     },
     {
       "anchorPoint": {
-        "x": 2.1006023440618313,
-        "y": 3.993813273340833
+        "x": 1.673545847091695,
+        "y": 2.727753788840912
       },
       "prevControl": {
-        "x": 2.1006023440618313,
-        "y": 3.993813273340833
+        "x": 1.673545847091695,
+        "y": 2.727753788840912
       },
       "nextControl": null,
-      "holonomicAngle": 90.0,
+      "holonomicAngle": 0.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "dropObjectClaw",
+          "rotateArmIdle"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
