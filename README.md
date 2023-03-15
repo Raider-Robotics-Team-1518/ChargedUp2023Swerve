@@ -2,8 +2,7 @@
 <b>Raider Robotics Team 1518's 2023 Charged up Robot Code</b><br>
 
 ### Picture of Robot 5 days before FLR
-<h6>don't worry we cut that piece of metal in the middle of the arm</h6>
-<img src="https://i.imgur.com/FKt7UHo.jpeg" width=35% height=35%>
+<img src="https://i.imgur.com/rE5o8TC.jpeg" width=35% height=35%>
 
 ### Why are you writing a ReadMe? It's just Robot Code!
 This project specifically is special to Team 1518 as it is the first project where we are using advanced control (<b>Swerve</b>) as well as the first project where we are using a Command-Based structure. This is important as it is a big stepping stone in the progression of a good understanding of advanced-control for future Raider Robotics Team 1518 FRC Java projects. 
@@ -34,3 +33,6 @@ Team 1518 would not exist without the <b>support and appreciation</b> of <b>all 
 these companies put in.<br>
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you!<br>
 <b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.
+
+#### ReadMe written by Chloe Quinn (2023)
+##### Junior at Palmyra-Macedon High School who has had a love for programming for a very long time.
