@@ -1,6 +1,10 @@
 # ChargedUp2023Swerve
 <b>Raider Robotics Team 1518's 2023 Charged up Robot Code</b><br>
 
+### Picture of Robot 5 days before FLR
+<h6>don't worry we cut that piece of metal in the middle of the arm</h6>
+<img src="https://i.imgur.com/FKt7UHo.jpeg" width=35% height=35%>
+
 ### Why are you writing a ReadMe? It's just Robot Code!
 This project specifically is special to Team 1518 as it is the first project where we are using advanced control (<b>Swerve</b>) as well as the first project where we are using a Command-Based structure. This is important as it is a big stepping stone in the progression of a good understanding of advanced-control for future Raider Robotics Team 1518 FRC Java projects. 
 
