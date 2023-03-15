@@ -1,6 +1,5 @@
 # ChargedUp2023Swerve
-<b>Raider Robotics Team 1518</b><br>
-Robot Code for the 2023's First Robotics Competition Charged Up
+<b>Raider Robotics Team 1518's 2023 Charged up Robot Code</b><br>
 
 ### Why are you writing a ReadMe? It's just Robot Code!
 This project specifically is special to Team 1518 as it is the first project where we are using advanced control (<b>Swerve</b>) as well as the first project where we are using a Command-Based structure. This is important as it is a big stepping stone in the creation of a well-developed advanced-control basis for future Raider Robotics Team 1518 robot code projects. 
