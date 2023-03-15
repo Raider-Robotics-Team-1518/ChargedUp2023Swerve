@@ -9,7 +9,7 @@ Not only is this project a huge milestone for Raider Robotics Team 1518, but the
 
 ## Thanks
 
-### Other teams
+### Other Teams
 [@Rob-Heslin](https://github.com/Rob-Heslin) - Wrote the Swerve drive code used in this project. Used blackmagic to help us fix
 code problems that would not seem to go away. Thank you Rob and Greater Rochester Robotics! (Team <b>340</b>)
 
