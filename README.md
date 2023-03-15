@@ -1,7 +1,7 @@
 # ChargedUp2023Swerve
 <b>Raider Robotics Team 1518's 2023 Charged up Robot Code</b><br>
 
-### Picture of Robot 5 days before FLR
+### Picture of Robot 3 days before Finger Lakes Regional
 <img src="https://i.imgur.com/rE5o8TC.jpeg" width=35% height=35%>
 
 ### Why are you writing a ReadMe? It's just Robot Code!
