@@ -32,7 +32,6 @@ Team 1518 would not exist without the <b>support and appreciation</b> of <b>all 
 <b>AndyMark, CrossTheRoadElectronics, RevRobotics, and all the other FRC-related companies</b> - FRC wouldn't be what it is today without the work
 these companies put in.<br>
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you!<br>
-<b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.
+<b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.<br>
 
-#### ReadMe written by Chloe Quinn (2023)
-##### Junior at Palmyra-Macedon High School who has had a love for programming for a very long time.
+<h6>ReadMe written by Chloe Quinn, Junior at Palmyra-Macedon High School who has had a love for programming for a very long time.</h6>
