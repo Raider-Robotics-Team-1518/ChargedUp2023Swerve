@@ -1,5 +1,5 @@
 # ChargedUp2023Swerve
-<h4>Team 1518's Robot Code for First Robotics Competition's 2023 Charged Up</h4>
+<h4><b>Raider Robotics Team 1518</b> Robot Code for First Robotics Competition's 2023 Charged Up</h4>
 
 ## Credits
 
