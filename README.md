@@ -34,5 +34,5 @@ these companies put in.<br>
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you!<br>
 <b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.<br>
 
-<h6>ReadMe written by Chloe Quinn, Junior at Palmyra-Macedon High School who has had a love for programming for a very long time.</h6>
+<h6>Majority of ChargedUp2023Swerve + ReadMe written by Chloe Quinn, Junior at Palmyra-Macedon High School who has had a love for programming for a very long time.</h6>
 <h6>Written on behalf of Raider Robotics Team 1518</h6>
