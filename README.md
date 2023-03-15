@@ -26,7 +26,7 @@ code; helping keep me (Chloe) sane helped a ton. 2 or more minds are always bett
 ### Sponsors
 Team 1518 would not exist without the <b>support and appreciation</b> of <b>all of our sponsors</b> as a collective <b>whole</b>, we really appreciate these companies putting their time and effort to support a local FRC team; you guys help bring a positive impact in helping shape the bright minds of our future!
 
-### Special Mentions
+### Honorable Mentions
 <b>AndyMark, CrossTheRoadElectronics, RevRobotics, and all the other FRC-related companies</b> - FRC wouldn't be what it is today without the work
 these companies put in.<br>
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you! 
