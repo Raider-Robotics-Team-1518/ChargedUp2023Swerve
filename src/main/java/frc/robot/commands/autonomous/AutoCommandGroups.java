@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.PlaceMode;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderGrabbing;
@@ -14,6 +15,7 @@ import frc.robot.commands.autonomous.telescope.AutoTelescopeDisable;
 import frc.robot.commands.autonomous.telescope.AutoTelescopeEnable;
 import frc.robot.commands.autonomous.telescope.ResetTelescopeSeconds;
 import frc.robot.commands.autonomous.telescope.SetTelescopeSeconds;
+import frc.robot.commands.struct.Autos;
 
 public class AutoCommandGroups {
 
@@ -75,6 +77,13 @@ public class AutoCommandGroups {
             new AutoTelescopeEnable(1d),
             new WaitCommand(placeMode.getWaitTime()),
             new AutoTelescopeDisable()
+        );
+    }
+
+    public static SequentialCommandGroup doAutonomousScoreOne(String pathName) {
+        return new SequentialCommandGroup(
+            Autos.getFullAutoAprilTagStart(pathName+RobotContainer.csChooser.getSelected()),
+            Autos.getFullAutoAprilTagStart("ChargeStation"+(RobotContainer.csChooserOverride.getSelected().equalsIgnoreCase("none") ?  RobotContainer.csChooser.getSelected() : RobotContainer.csChooserOverride.getSelected())) // end auto go to charge station
         );
     }
 

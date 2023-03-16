@@ -121,14 +121,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void offsetShoulder(double offset) {
-        if(offset > 0) {
-            // going up limit
-            if(getShoulderMotor().getForwardLimitSwitch(Type.kNormallyOpen).isPressed()) offset = 0.0d;
-        } else {
-            // going down limit
-            if(getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) offset = 0.0d;
-        }
-        currentShoulderSetpoint = currentShoulderSetpoint+offset;
+        setShoulderTargetPos(currentShoulderSetpoint+offset, false);
+        //currentShoulderSetpoint = currentShoulderSetpoint+offset;
     }
 
     public void setArmCoast() {
@@ -174,6 +168,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setShoulderTargetPos(double target, boolean angle) {
         double targetPos = target;
+        if(shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen).isPressed() && target > currentShoulderSetpoint) return;
+        if(shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen).isPressed() && target < currentShoulderSetpoint) return;
         if(angle) targetPos = ((target/180)*maxShoulderPos);
         currentShoulderSetpoint = targetPos;
     }

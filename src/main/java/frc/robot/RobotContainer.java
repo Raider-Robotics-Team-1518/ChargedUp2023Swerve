@@ -121,6 +121,8 @@ public class RobotContainer {
 
   /* Command Choosers */
   public static SendableChooser<Command> autoChooser = new SendableChooser<Command>(); // Autonomous
+  public static SendableChooser<String> csChooser = new SendableChooser<String>(); // Autonomous ChargeStation Part
+  public static SendableChooser<String> csChooserOverride = new SendableChooser<String>(); // Autonomous ChargeStation Part Override
   public static SendableChooser<Command> setupShoulderChooser = new SendableChooser<Command>(); // Shoulder Setup
   public static SendableChooser<Command> setupWristChooser = new SendableChooser<Command>(); // Wrist Setup
   public static SendableChooser<Command> setupTelescopeChooser = new SendableChooser<Command>(); // Telescope Setup
@@ -217,9 +219,21 @@ public class RobotContainer {
   private void configureAutoModes() {
     
     autoChooser.setDefaultOption("Wait 1 sec(do nothing)", new WaitCommand(1));
+    
+    autoChooser.addOption("1Cube", AutoCommandGroups.doAutonomousScoreOne("Auto1Cube"));
+    autoChooser.addOption("1Cone", AutoCommandGroups.doAutonomousScoreOne("Auto1Cone"));
 
+    csChooser.addOption("Top", "Upper");
+    csChooser.addOption("Middle", "Mid");
+    csChooser.addOption("Bottom", "Lower");
+
+    csChooserOverride.setDefaultOption("None", "none");
+    csChooserOverride.addOption("Top", "Upper");
+    csChooserOverride.addOption("Middle", "Mid");
+    csChooserOverride.addOption("Bottom", "Lower");
 
     SmartDashboard.putData(RobotContainer.autoChooser);
+    SmartDashboard.putData(RobotContainer.csChooser);
   }
 
   private void configureSwerveSetup() {

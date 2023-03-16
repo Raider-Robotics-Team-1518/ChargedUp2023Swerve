@@ -95,13 +95,29 @@ public final class Constants {
      public static final double ARM_TELESCOPE_I = 0.00;
      public static final double ARM_TELESCOPE_D = 0.0005;
      public static double ARM_TELESCOPE_GRAVITY_FACTOR = 0.001; // Motor Output = PIDOut + (cosine(angle in deg of arm) * ARM_TELESCOPE_GRAVITY_FACTOR)
+     public static final double ARM_TELESCOPE_VELOCITY = 0.25d; // Measured in meters per second TODO
 
-
-     /* Path Planner Constants */
+     /* Field Constants */
 
      /* Center of Field Offsets */
      public static final double FIELD_CENTER_X = 8.270875d;
      public static final double FIELD_CENTER_Y = 4.00685d;
+
+     // Measured in Meters
+     public static final double DIST_TO_UPPER_NODE_CONE = 1.01d;
+     public static final double DIST_TO_MIDDLE_NODE_CONE = 0.58d;
+
+     public static final double DIST_TO_UPPER_NODE_CUBE = 1.01d;
+     public static final double DIST_TO_MIDDLE_NODE_CUBE = 0.58d;
+
+     public static final double DIST_TO_LOWER_NODE = 0.29d;
+
+
+     /* Robot Dimensions */
+     public static final double ROBOT_SIZE = 0.78105d;
+     public static final double TOWER_HEIGHT_TO_PIVOT = 0.9398;
+     public static final double TELESCOPE_LENGTH_RETRACTED = 1d; // TODO
+
 
      
 
@@ -127,12 +143,15 @@ public final class Constants {
     public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(0.4826,-0.4826); 
 
     /* Swerve Module Drive Motor Constants */
-    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.0000382966;
-    //(1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
-    // (1/(3.14159265*diameter))*(8.14)*(2048)
-    // 1024 units: 0.00253727785
-    // 2048 units: 0.00126863892
-    // 0.00037689945
+    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00003829298477;
+    // rob old: (1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
+    // semi working value (tested): 0.0000382966
+    // !! newest calculation (not tested) !!
+    // encoderPos*DRIVE_ENC_TO_METERS_FACTOR=distanceTraveled
+    // encoderPos*(1/2048)*(1/8.14)*(2*3.14159265*0.1016)=distanceTraveled
+    // (1/2048)*(1/8.14)*(2*3.14159265*0.1016) = 0.00003829298477 
+    // (Calculated using Full Precision calculator, up to 100 decimal places)
+
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
     public static final double MOTOR_MAXIMUM_VELOCITY = 4.1; // 4.62 default
@@ -150,7 +169,11 @@ public final class Constants {
     public static final double SWERVE_DRIVE_FF_VALUE = 0.0d;
 
     /* Swerve Module Rotation constants */ 
-    public static final double RAD_TO_ENC_CONV_FACTOR = 8344.5488;// (1outputRev/(2*3.1415 radians)) * (12.8 motorRev / 1 outputRev) * (4096 u / 1 motorRev)
+    public static final double RAD_TO_ENC_CONV_FACTOR = 2653.2274929;
+    // rob old (tested, broken): (1outputRev/(2*3.1415 radians)) * (12.8 motorRev / 1 outputRev) * (4096 u / 1 motorRev) = 8344.5488
+    // !! newest calculation (not tested) !!
+    // (1/(2*pi))*2048*8.14 = 2653.2274929
+
     /* PID Constants for rotation of the swerve module */
     public static final double SWERVE_ROT_P_VALUE = 0.02; // -0.025
     public static final double SWERVE_ROT_I_VALUE = 0.0;
@@ -207,25 +230,33 @@ public final class Constants {
     /* Digital Input */
 
     public enum PlaceMode {
-      LOW_NODE_CONE(99, 0.25),
-      MID_NODE_CONE(90, 0.5),
-      HIGH_NODE_CONE(90, 1),
-      LOW_NODE_CUBE(90, 0.25),
-      MID_NODE_CUBE(90, 0.5),
-      HIGH_NODE_CUBE(90, 1);
-
-      private final double angle, waitTime;
-      private PlaceMode(double angle, double waitTime) {
-        this.angle = angle;
-        this.waitTime = waitTime;
+      LOW_NODE_CONE(ROBOT_SIZE-DIST_TO_LOWER_NODE),
+      MID_NODE_CONE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CONE),
+      HIGH_NODE_CONE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CONE),
+      LOW_NODE_CUBE(ROBOT_SIZE-DIST_TO_LOWER_NODE),
+      MID_NODE_CUBE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CUBE),
+      HIGH_NODE_CUBE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CUBE);
+      // Math.asin((ROBOT_SIZE-DIST_TO_UPPER_NODE_CUBE))/TOWER_HEIGHT_TO_PIVOT
+      private final double distance;
+      private PlaceMode(double distance) {
+        this.distance = distance;
       }
 
       public double getAngle() {
-        return this.angle;
+        double resAngle = Math.asin((this.distance)/TOWER_HEIGHT_TO_PIVOT);
+        if(resAngle < 0) {
+          resAngle = Math.abs(resAngle)+90;
+        } else {
+          resAngle = 90-Math.abs(resAngle);
+        }
+        return resAngle;
       }
 
       public double getWaitTime() {
-        return this.waitTime;
+        double neededExtensionMeters = ((this.distance)/Math.sin(getAngle()))*Math.sin(90);
+        neededExtensionMeters = Math.abs(neededExtensionMeters);
+        neededExtensionMeters -= TELESCOPE_LENGTH_RETRACTED;
+        return neededExtensionMeters/ARM_TELESCOPE_VELOCITY;
       }
     }
 

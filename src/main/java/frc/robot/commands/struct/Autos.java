@@ -90,4 +90,11 @@ public class Autos {
         return getFullAutoAprilTagStart("OOWAdvanced");
     }
 
+    public static Command getAprilTagCommand(String path) {
+        return getFullAutoAprilTagStart(path);
+    }
+
+
+
+
 }
