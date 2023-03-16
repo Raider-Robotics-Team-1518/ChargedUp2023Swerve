@@ -37,6 +37,6 @@ these companies put in. We went from CIM Motors to multidirectional robot moveme
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you!<br>
 <b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.<br>
 
-<h7>I love programming. - Chloe Quinn 2023</h7>
+<h7>"I love programming." - Chloe Quinn 2023</h7>
 <h6>Majority of ChargedUp2023Swerve + ReadMe written by Chloe Quinn, Junior at Palmyra-Macedon High School.</h6>
 <h6>Written on behalf of Raider Robotics Team 1518</h6>
