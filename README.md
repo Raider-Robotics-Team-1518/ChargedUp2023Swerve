@@ -23,7 +23,7 @@ code problems that would not seem to go away. Thank you Rob and Greater Rocheste
 code; helping keep me (Chloe) sane helped a ton. 2 or more minds are always better than one when problem solving, thank you guys!<br>
 <b>Mr. D</b> - Always there when engineering problems seemed too hard to solve, thank you!<br>
 <b>Mrs. D</b> - Always there to keep the team running even when the factors might not be in our favor, Team 1518 appreciates your work!<br>
-<b>Al</b> - Always there to help bring things back to terms that actually make sense, Team 1518 hopes to continue to see you in the future!<br>
+<b>Al</b> - Always there to help bring things back to terms that make logical sense rather than going 1000 mph in our brains, Team 1518 hopes to continue to see you in the future!<br>
   
 ### Sponsors
 Team 1518 would not exist without the <b>support and appreciation</b> of <b>all of our sponsors</b> as a collective <b>whole</b>, we really appreciate these companies putting their time and effort to support a local FRC team; you guys help bring a positive impact in helping shape the bright minds of our future!
