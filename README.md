@@ -18,6 +18,9 @@ code problems that would not seem to go away. Thank you Rob and Greater Rocheste
 [@mjansen4857](https://github.com/mjansen4857) - Wrote PathPlanner which we use in our 2023 autonomous. This program truly lives up to the
 "simple yet powerful" description. Thank you Michael and Ranger Robotics! (Team <b>3015</b>)
 
+### 1518 Students
+Even with our less than ten person robotics team, we were able to push through and continue with the progression of our team even though the odds were not in our favor whatsoever, congratulations to all first year members and thank you guys for pushing through the tough amounts of effort and work!
+
 ### 1518 Mentors
 <b>Mr. Schlegel, Mr. Herrmann, Mr. Poulsen, Mr. Szlucha, Mr. Barnes</b> - Huge contributors to the development of this project even if it was or wasn't writing
 code; helping keep me (Chloe) sane helped a ton. 2 or more minds are always better than one when problem solving, thank you guys!<br>
