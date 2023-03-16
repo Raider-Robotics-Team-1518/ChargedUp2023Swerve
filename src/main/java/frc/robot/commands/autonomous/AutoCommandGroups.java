@@ -1,9 +1,11 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.PlaceMode;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
@@ -80,11 +82,21 @@ public class AutoCommandGroups {
         );
     }
 
+    public static Command driveBackAuto() {
+        return Autos.getFullAuto("DriveBack");
+    }
+
     public static SequentialCommandGroup doAutonomousScoreOne(String pathName) {
+        String after = RobotContainer.csChooser.getSelected();
+        if(after == null) after = "Mid";
+        String override = RobotContainer.csChooserOverride.getSelected();
+        if(override == null || override.equalsIgnoreCase("none")) {
+            override = after;
+        }
         return new SequentialCommandGroup(
-            Autos.getFullAutoAprilTagStart(pathName+RobotContainer.csChooser.getSelected()),
-            Autos.getFullAutoAprilTagStart("ChargeStation"+(RobotContainer.csChooserOverride.getSelected().equalsIgnoreCase("none") ?  RobotContainer.csChooser.getSelected() : RobotContainer.csChooserOverride.getSelected())) // end auto go to charge station
-        );
+            Autos.getFullAutoAprilTagStart(pathName+after),
+            Autos.getFullAutoAprilTagStart("ChargeStation"+override) // end auto go to charge station
+            );
     }
 
 
@@ -101,7 +113,7 @@ public class AutoCommandGroups {
     }
 
     public static CommandBase moveShoulderTest() {
-        double angle = SmartDashboard.getNumber("WantedAngle", 0.0d);
+        double angle = SmartDashboard.getNumber("WantedAnglee", Constants.ARM_SHOULDER_LOWERSWITCH_DEG);
         return new AutoRotateShoulderToAngle(angle);
     }
 }

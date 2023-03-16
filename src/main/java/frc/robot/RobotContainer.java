@@ -5,6 +5,8 @@
 package frc.robot;
 
 
+import org.w3c.dom.css.CSSCharsetRule;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -142,6 +144,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureAutonomousEventMap();
     
+    SmartDashboard.putData(new DriveAdjustModulesManually());
     CameraServer.startAutomaticCapture();
   }
 
@@ -219,10 +222,11 @@ public class RobotContainer {
   private void configureAutoModes() {
     
     autoChooser.setDefaultOption("Wait 1 sec(do nothing)", new WaitCommand(1));
-    
     autoChooser.addOption("1Cube", AutoCommandGroups.doAutonomousScoreOne("Auto1Cube"));
+    autoChooser.addOption("DriveBack", AutoCommandGroups.driveBackAuto());
     autoChooser.addOption("1Cone", AutoCommandGroups.doAutonomousScoreOne("Auto1Cone"));
 
+    csChooser.setDefaultOption("Middle", "Mid");
     csChooser.addOption("Top", "Upper");
     csChooser.addOption("Middle", "Mid");
     csChooser.addOption("Bottom", "Lower");
@@ -234,6 +238,7 @@ public class RobotContainer {
 
     SmartDashboard.putData(RobotContainer.autoChooser);
     SmartDashboard.putData(RobotContainer.csChooser);
+    SmartDashboard.putData(RobotContainer.csChooserOverride);
   }
 
   private void configureSwerveSetup() {
@@ -251,8 +256,8 @@ public class RobotContainer {
     SmartDashboard.putData(new DriveTranslationExport());
     SmartDashboard.putData(new DriveRotationExport());
     SmartDashboard.putData("Drive Straight", Commands.sequence(Autos.autoDriveStraight()));
-    SmartDashboard.putData("Drive Horseshoe", Commands.sequence(Autos.autoHorseshoeTest()));
-    SmartDashboard.putData("Auto Spin Slide", Commands.sequence(Autos.autoSpinSlide()));
+    //SmartDashboard.putData("Drive Horseshoe", Commands.sequence(Autos.autoHorseshoeTest()));
+    //SmartDashboard.putData("Auto Spin Slide", Commands.sequence(Autos.autoSpinSlide()));
   }
 
   private void configureSetupModes() {
@@ -261,10 +266,10 @@ public class RobotContainer {
      */
 
     SmartDashboard.putNumber("TelescopeSeconds", 0.0d);
-    SmartDashboard.putData(AutoCommandGroups.moveTelescopeSecondsTest());
+    SmartDashboard.putData("TestTelescopeSeconds", AutoCommandGroups.moveTelescopeSecondsTest());
 
-    SmartDashboard.putNumber("WantedAngle", 45d);
-    SmartDashboard.putData(AutoCommandGroups.moveShoulderTest());
+    SmartDashboard.putNumber("WantedAnglee", 45d);
+    SmartDashboard.putData("TestAngleSetpoint", AutoCommandGroups.moveShoulderTest());
 
     /* General Setup Commands */
     SmartDashboard.putData(new SetupToggle());

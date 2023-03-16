@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.operational.setup.shoulder.ShoulderSetMaxMin;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -111,6 +112,9 @@ public class ArmSubsystem extends SubsystemBase {
             return;
         }
 
+        if(this.isDumping) return;
+        if(ShoulderSetMaxMin.isRunning) return;
+
         if(!DriverStation.isEnabled()) {
             return;
         }
@@ -168,8 +172,22 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setShoulderTargetPos(double target, boolean angle) {
         double targetPos = target;
-        if(shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen).isPressed() && target > currentShoulderSetpoint) return;
-        if(shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen).isPressed() && target < currentShoulderSetpoint) return;
+        boolean topLimitReached = shoulderMotor.getForwardLimitSwitch(Type.kNormallyOpen).isPressed();
+        boolean lowerLimitReaced = shoulderMotor.getReverseLimitSwitch(Type.kNormallyOpen).isPressed();
+
+        double diff = target-currentShoulderSetpoint;
+
+        if(lowerLimitReaced) {
+            if(diff < 0) return;
+        }
+
+        if(topLimitReached) {
+            if(diff > 0) {
+                currentShoulderSetpoint = ((Constants.ARM_SHOULDER_UPPERSWITCH_DEG+Constants.ARM_SHOULDER_LOWERSWITCH_DEG)/180)*maxShoulderPos;
+                return;
+            }
+        }
+    
         if(angle) targetPos = ((target/180)*maxShoulderPos);
         currentShoulderSetpoint = targetPos;
     }
@@ -320,20 +338,22 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void doShoulderDump() throws IOException {
         float timeElapsed = (System.currentTimeMillis() - start) ; // time elapsed in seconds
+        this.isDumping = true;
+        this.setArmBrake();
         if(timeElapsed >= 1000 && timeElapsed <= 2000) {
-            shoulderMotor.set(0.1);
+            shoulderMotor.set(-0.4);
         } else if(timeElapsed > 2000 && timeElapsed <= 3000) {
             shoulderMotor.set(0);
         } else if(timeElapsed > 3000 && timeElapsed <= 3500) {
-            shoulderMotor.set(-0.1);
+            shoulderMotor.set(0.4);
         } else if(timeElapsed > 3500 && timeElapsed <= 4500) {
             shoulderMotor.set(0);
         } else if(timeElapsed > 4500 && timeElapsed <= 5500) {
-            shoulderMotor.set(0.2);
+            shoulderMotor.set(-0.625);
         } else if(timeElapsed > 5500 && timeElapsed <= 6500) {
             shoulderMotor.set(0);
         } else if(timeElapsed > 6500 && timeElapsed <= 7000) {
-            shoulderMotor.set(-0.2);
+            shoulderMotor.set(0.625);
         } else if(timeElapsed > 7000 && timeElapsed <= 8000) {
             shoulderMotor.set(0.0);
         }

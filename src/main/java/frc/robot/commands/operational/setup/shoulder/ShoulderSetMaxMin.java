@@ -11,6 +11,8 @@ public class ShoulderSetMaxMin extends CommandBase {
     private boolean minFound = false;
     private boolean calculated = false;
 
+    public static boolean isRunning = false;
+
     double upperEncVal, lowerEncVal;
 
     public ShoulderSetMaxMin() {
@@ -27,6 +29,8 @@ public class ShoulderSetMaxMin extends CommandBase {
   
     @Override
     public void execute() {
+        isRunning = true;
+        System.out.println("running");
         if(!minFound) {
             if(RobotContainer.armSubsystem.getShoulderMotor().getReverseLimitSwitch(Type.kNormallyOpen).isPressed()) {
                 RobotContainer.armSubsystem.resetShoulderPosition(); // set to 0
@@ -70,6 +74,7 @@ public class ShoulderSetMaxMin extends CommandBase {
   
     @Override
     public void end(boolean interrupted) {
+        isRunning = false;
     }
 
     @Override
@@ -83,6 +88,7 @@ public class ShoulderSetMaxMin extends CommandBase {
             calculated = false;
             minFound = maxFound = false;
             upperEncVal = lowerEncVal = 0;
+            isRunning = false;
             return true;
         }
         return false;

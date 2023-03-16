@@ -27,9 +27,9 @@ public final class Constants {
 
     public static final int ARM_SHOULDER_ID = 30; // Normal Neo
     //public static final double ARM_SHOULDER_LEVEL_DEG = 69d; // Degrees offset from the lower switch with the lower switch pos being considered 0 degrees and 0 encoder position
-    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 72d; // Degrees offset from the lower switch to the upper switch
+    public static final double ARM_SHOULDER_UPPERSWITCH_DEG = 74d; // Degrees offset from the lower switch to the upper switch
                                                                    // with the lower switch pos being considered 0 degrees and 0 encoder position
-    public static final double ARM_SHOULDER_LOWERSWITCH_DEG = 22d; // Degrees offset from the tower to the lower switch
+    public static final double ARM_SHOULDER_LOWERSWITCH_DEG = 24d; // Degrees offset from the tower to the lower switch
 
     public static final int ARM_WRIST_ID = 666; // Neo 550
 
@@ -81,9 +81,9 @@ public final class Constants {
      * Non-Swerve PID
      */
      // Shoulder PID
-     public static final double ARM_SHOULDER_P = 0.05;
-     public static final double ARM_SHOULDER_I = 0.00;
-     public static final double ARM_SHOULDER_D = 0.0005;
+     public static final double ARM_SHOULDER_P = 0.035; // 0.05
+     public static final double ARM_SHOULDER_I = 0.00; 
+     public static final double ARM_SHOULDER_D = 0.0005; // 0.0005
 
      // Wrist PID
      public static final double ARM_WRIST_P = 0.05;
@@ -115,8 +115,8 @@ public final class Constants {
 
      /* Robot Dimensions */
      public static final double ROBOT_SIZE = 0.78105d;
-     public static final double TOWER_HEIGHT_TO_PIVOT = 0.9398;
-     public static final double TELESCOPE_LENGTH_RETRACTED = 1d; // TODO
+     public static final double TOWER_HEIGHT_TO_PIVOT = 1.1684; // 46 inches
+     public static final double TELESCOPE_LENGTH_RETRACTED = 0.9144;
 
 
      
@@ -175,9 +175,9 @@ public final class Constants {
     // (1/(2*pi))*2048*8.14 = 2653.2274929
 
     /* PID Constants for rotation of the swerve module */
-    public static final double SWERVE_ROT_P_VALUE = 0.02; // -0.025
+    public static final double SWERVE_ROT_P_VALUE = 0.02*4; // -0.025
     public static final double SWERVE_ROT_I_VALUE = 0.0;
-    public static final double SWERVE_ROT_D_VALUE = 0.05;  // 0.05
+    public static final double SWERVE_ROT_D_VALUE = 0.05*4;  // 0.05
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;
     public static final double SWERVE_ROT_FF_VALUE = 0.0;
     
@@ -199,7 +199,7 @@ public final class Constants {
     public static final double ROBOT_COUNTER_SPIN_D = 0.001;
 
     /* Driver Scaling Constants */
-    public static final double DRIVER_SPEED_SCALE_LINEAR = 0.65;
+    public static final double DRIVER_SPEED_SCALE_LINEAR = 0.5;
     public static final double DRIVER_SPEED_SCALE_ROTATIONAL = .75;
 
     
@@ -244,11 +244,7 @@ public final class Constants {
 
       public double getAngle() {
         double resAngle = Math.asin((this.distance)/TOWER_HEIGHT_TO_PIVOT);
-        if(resAngle < 0) {
-          resAngle = Math.abs(resAngle)+90;
-        } else {
-          resAngle = 90-Math.abs(resAngle);
-        }
+        resAngle = 90-Math.abs(resAngle);
         return resAngle;
       }
 

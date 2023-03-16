@@ -45,6 +45,7 @@ public class DriveRobotCentricDPAD extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    RobotContainer.swerveDrive.isFieldRelative = false;
     //pull primary stick values, and put to awaySpeed and lateralSpeed doubles
     double forwardSpeed = Robot.robotContainer.getDriverAxis(Axis.kLeftY);
     forwardSpeed *= 0.5;

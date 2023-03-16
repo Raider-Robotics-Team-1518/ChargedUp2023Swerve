@@ -12,6 +12,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +21,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,6 +33,15 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
 
     public Pose2d overrideStartPos;
 
+    Supplier<Pose2d> poseSupplier;
+    Consumer<Pose2d> resetPose;
+    SwerveDriveKinematics kinematics;
+    PIDConstants translationConstants;
+    PIDConstants rotationConstants;
+    Consumer<SwerveModuleState[]> outputModuleStates;
+    Map<String, Command> eventMap;
+    Subsystem[] driveRequirements;
+
     public AprilTagSwerveAutoBuilder(
         Supplier<Pose2d> poseSupplier,
         Consumer<Pose2d> resetPose,
@@ -42,22 +51,31 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
         Consumer<SwerveModuleState[]> outputModuleStates,
         Map<String, Command> eventMap,
         Subsystem... driveRequirements) {
-    super(
-        poseSupplier,
-        resetPose,
-        kinematics,
-        translationConstants,
-        rotationConstants,
-        outputModuleStates,
-        eventMap,
-        false,
-        driveRequirements);
-    }
+    super(poseSupplier, resetPose, kinematics, translationConstants, rotationConstants, outputModuleStates, eventMap, true, driveRequirements);
+        this.poseSupplier = poseSupplier;
+        this.resetPose = resetPose;
+        this.kinematics = kinematics;
+        this.translationConstants = translationConstants;
+        this.rotationConstants = rotationConstants;
+        this.outputModuleStates = outputModuleStates;
+        this.eventMap = eventMap;
+        this.driveRequirements = driveRequirements;
+}
 
 
     @Override
     public CommandBase followPath(PathPlannerTrajectory trajectory) {
-        return null;
+        // we are using kinematics so we dont need the other one
+        return new PPSwerveControllerCommand(
+            trajectory,
+            poseSupplier,
+            kinematics,
+            pidControllerFromConstants(translationConstants),
+            pidControllerFromConstants(translationConstants),
+            pidControllerFromConstants(rotationConstants),
+            outputModuleStates,
+            useAllianceColor,
+            driveRequirements);
     }
 
 
@@ -94,7 +112,7 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     }
 
     public void resetOdometryAprilTag() {
-        RobotContainer.swerveDrive.driveOdometry.resetPosition(Rotation2d.fromDegrees(0.0d), RobotContainer.swerveDrive.getSwerveModulePositions(), getBotPosTeamRelative());
+        RobotContainer.swerveDrive.driveOdometry.resetPosition(Rotation2d.fromDegrees(180.0d), RobotContainer.swerveDrive.getSwerveModulePositions(), getBotPosTeamRelative());
     }
 
 
@@ -121,7 +139,7 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     }
 
     private PathPoint minimalisticPoint(Translation2d translation2d) {
-        return new PathPoint(translation2d, Rotation2d.fromDegrees(0.0d));
+        return new PathPoint(translation2d, Rotation2d.fromDegrees(180.0d));
     }
 
     private PathConstraints getPathConstraints() {
@@ -138,8 +156,8 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     }
 
     private void simpleTrajectoryFollow(PathPlannerTrajectory trajectory, List<CommandBase> commands) {
-        // trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
-        // TODO: ^ !! NEEDED FOR COMPETITON !!
+        trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+        // ADDED: ^ !! NEEDED FOR COMPETITON !!
 
         // use this instead of resetPose command, seems to work more accurately for what we are doing
         RobotContainer.swerveDrive.driveOdometry.resetPosition(trajectory.getInitialState().holonomicRotation, RobotContainer.swerveDrive.getSwerveModulePositions(), trajectory.getInitialState().poseMeters);
@@ -149,8 +167,9 @@ public class AprilTagSwerveAutoBuilder extends SwerveAutoBuilder{
     }
 
     private Pose2d getBotPosTeamRelative() {
-        Pose2d botPos = DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose2d_wpiRed("limelight") 
-            : LimelightHelpers.getBotPose2d_wpiRed("limelight");
+        /*Pose2d botPos = DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose2d_wpiRed("limelight") 
+            : LimelightHelpers.getBotPose2d_wpiRed("limelight");*/ // old method
+        Pose2d botPos = LimelightHelpers.getBotPose2d("limelight");
         return botPos;
     }
 

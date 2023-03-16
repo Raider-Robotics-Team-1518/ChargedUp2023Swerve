@@ -35,6 +35,7 @@ public class SwerveDrive extends SubsystemBase {
 
   private static SwerveModule swerveModules[];
   private static SwerveModule frontLeft, rearLeft, rearRight, frontRight;
+  public boolean isFieldRelative = false;
   public AHRS imu;
   public SwerveDriveKinematics driveKinematics;
   public SwerveDriveOdometry driveOdometry;
@@ -104,6 +105,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Gyro", this.getGyroInDeg());
     SmartDashboard.putNumber("XPos", getCurPose2d().getX());
     SmartDashboard.putNumber("YPos", getCurPose2d().getY());
+    SmartDashboard.putBoolean("FieldRelativeEnabled", this.isFieldRelative);
 
 
     //run odometry update on the odometry object

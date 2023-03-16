@@ -23,6 +23,7 @@ public class Autos {
             new PIDConstants(Constants.SWERVE_ROT_P_VALUE, Constants.SWERVE_ROT_I_VALUE, Constants.SWERVE_ROT_D_VALUE),
             driveSystem::setModulesVelocityToDutyCycle,
             Constants.autonomousEventMap,
+            true,
             driveSystem);
 
     private static final AprilTagSwerveAutoBuilder aprilTagAutoBuilder = new AprilTagSwerveAutoBuilder(
