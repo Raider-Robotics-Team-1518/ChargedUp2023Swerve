@@ -33,7 +33,7 @@ Team 1518 would not exist without the <b>support and appreciation</b> of <b>all 
 
 ### Honorable Mentions
 <b>AndyMark, CrossTheRoadElectronics, RevRobotics, and all the other FRC-related companies</b> - FRC wouldn't be what it is today without the work
-these companies put in.<br>
+these companies put in. We went from CIM Motors to multidirectional robot movement real fast.<br>
 <b>Garlock</b> - Sponsor of the team that has dedicated direct personal time in contributing to the progression of Team 1518, thank you!<br>
 <b>[PID Tuner](https://pidtuner.com/#/)</b> - Program that has helped dramatically shorten the amount of time spent tuning PID.<br>
 
