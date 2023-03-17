@@ -5,8 +5,6 @@
 package frc.robot;
 
 
-import org.w3c.dom.css.CSSCharsetRule;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;

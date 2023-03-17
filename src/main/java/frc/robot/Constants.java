@@ -146,6 +146,8 @@ public final class Constants {
     public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00003829298477;
     // rob old: (1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
     // semi working value (tested): 0.0000382966
+    // 382929
+    // 382966
     // !! newest calculation (not tested) !!
     // encoderPos*DRIVE_ENC_TO_METERS_FACTOR=distanceTraveled
     // encoderPos*(1/2048)*(1/8.14)*(2*3.14159265*0.1016)=distanceTraveled
