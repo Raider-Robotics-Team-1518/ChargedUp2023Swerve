@@ -42,7 +42,7 @@ public class DriveTranslationExport extends CommandBase {
         // we kinda have to do a cluster of if statements because the file writing needs to be happening continuously 
         // aka i just forgot how threads work and im lazy lol
         doSteps();
-        writeData(inputSpeed, RobotContainer.swerveDrive.getCurPose2d().getTranslation().getX());
+        writeData(inputSpeed, RobotContainer.swerveDrive.getCurPose2d().getX());
     } 
   
     @Override
@@ -66,46 +66,46 @@ public class DriveTranslationExport extends CommandBase {
     }
 
     private void firstStep() {
-        if(isInTimeRange(0.0d, 3.5d)) {
+        if(isInTimeRange(0.0d, 2d)) {
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(3.5d, 7.0d)) {
+        } else if(isInTimeRange(2, 4)) {
             inputSpeed = driveFactorOne;
             System.out.println(inputSpeed);
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(7.0d, 10.5d)) {
+        } else if(isInTimeRange(4, 6)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
         }
     }
 
     private void secondStep() {
-        if(isInTimeRange(10.5d, 14.0d)) {
+        if(isInTimeRange(6, 8)) {
             inputSpeed = -driveFactorOne;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(14.0d, 17.5d)) {
+        } else if(isInTimeRange(8.0d, 10)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
         }
     }
 
     private void thirdStep() {
-        if(isInTimeRange(17.5d, 21.0d)) {
+        if(isInTimeRange(10, 12.0d)) {
             inputSpeed = driveFactorTwo;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(21.0d, 24.5d)) {
+        } else if(isInTimeRange(12.0d, 14.0d)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
         }
     }
 
     private void fourthStep() {
-        if(isInTimeRange(24.5d, 28.0d)) {
+        if(isInTimeRange(14.0d, 16.0d)) {
             inputSpeed = -driveFactorTwo;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(28.0d, 31.5d)) {
+        } else if(isInTimeRange(18.0d, 20.0d)) {
             inputSpeed = 0.0d;
             RobotContainer.swerveDrive.simpleDriveControlPercent(inputSpeed);
-        } else if(isInTimeRange(31.5d, 100.0d)) {
+        } else if(isInTimeRange(20.0d, 100.0d)) {
             this.end(false);
         }
     }

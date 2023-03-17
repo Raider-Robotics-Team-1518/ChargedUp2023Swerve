@@ -145,27 +145,27 @@ public class RobotContainer {
     SmartDashboard.putData(new DriveAdjustModulesManually());
     CameraServer.startAutomaticCapture();
   }
-
- /*
-     * (X, Y) End Positions for Out of way Paths
+    /*
+     * (X,Y) End Positions for Out of way Paths
      * OOW1: (4.90, 0.78)
      * OOW2: (5.45, 2.85)
      * OOW3/OOWAdvanced: (5.74, 3.60)
      */
 
   private void configureAutonomousEventMap() {
-    Constants.autonomousEventMap.put("feedClaw", new AutoFeedClaw());
-    Constants.autonomousEventMap.put("dropObjectClaw", new AutoDropObjectClaw());
+    Constants.autonomousEventMap.put("intake", AutoCommandGroups.intakeItem());
+    Constants.autonomousEventMap.put("puke", AutoCommandGroups.pukeItem());
     Constants.autonomousEventMap.put("retractTelescope", AutoCommandGroups.retractTelescope());
     Constants.autonomousEventMap.put("rotateArmIdle", AutoCommandGroups.rotateArmIdle());
     Constants.autonomousEventMap.put("rotateArmGrabbing", AutoCommandGroups.rotateArmGrabbing());
     Constants.autonomousEventMap.put("rotateArmCarrying", AutoCommandGroups.rotateArmCarrying());
-    Constants.autonomousEventMap.put("rotArmPlaceConeHigh", AutoCommandGroups.rotateArmPlacing(PlaceMode.HIGH_NODE_CONE));
-    Constants.autonomousEventMap.put("rotArmPlaceConeMid", AutoCommandGroups.rotateArmPlacing(PlaceMode.MID_NODE_CONE));
-    Constants.autonomousEventMap.put("rotArmPlaceConeLow", AutoCommandGroups.rotateArmPlacing(PlaceMode.LOW_NODE_CONE));
-    Constants.autonomousEventMap.put("rotArmPlaceCubeHigh", AutoCommandGroups.rotateArmPlacing(PlaceMode.HIGH_NODE_CUBE));
-    Constants.autonomousEventMap.put("rotArmPlaceCubeMid", AutoCommandGroups.rotateArmPlacing(PlaceMode.MID_NODE_CUBE));
-    Constants.autonomousEventMap.put("rotArmPlaceCubeLow", AutoCommandGroups.rotateArmPlacing(PlaceMode.LOW_NODE_CUBE));
+    Constants.autonomousEventMap.put("rotatePlaceHigh", AutoCommandGroups.rotateArmPlacing(PlaceMode.HIGH_NODE_CUBE));
+    Constants.autonomousEventMap.put("placeConeHigh", AutoCommandGroups.placeObject(PlaceMode.HIGH_NODE_CONE));
+    Constants.autonomousEventMap.put("placeConeMid", AutoCommandGroups.placeObject(PlaceMode.MID_NODE_CONE));
+    Constants.autonomousEventMap.put("placeConeLow", AutoCommandGroups.placeObject(PlaceMode.LOW_NODE_CONE));
+    Constants.autonomousEventMap.put("placeCubeHigh", AutoCommandGroups.placeObject(PlaceMode.HIGH_NODE_CUBE));
+    Constants.autonomousEventMap.put("placeCubeMid", AutoCommandGroups.placeObject(PlaceMode.MID_NODE_CUBE));
+    Constants.autonomousEventMap.put("placeCubeLow", AutoCommandGroups.placeCubeLow());
   }
 
 
@@ -173,7 +173,7 @@ public class RobotContainer {
     /* ==================== DRIVER BUTTONS ==================== */
 
     //driverLB.onTrue(new DriveResetGyroToZero());
-    driverStart.toggleOnTrue(new DriveRobotCentricDPAD(false));
+    driverStart.toggleOnTrue(new DriveRobotCentric(false));
     driverBack.toggleOnTrue(new DriveFieldRelative(false));
     //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
@@ -222,6 +222,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Wait 1 sec(do nothing)", new WaitCommand(1));
     autoChooser.addOption("1Cube", AutoCommandGroups.doAutonomousScoreOne("Auto1Cube"));
     autoChooser.addOption("DriveBack", AutoCommandGroups.driveBackAuto());
+    autoChooser.addOption("Score1Low", AutoCommandGroups.placeCubeLow());
     autoChooser.addOption("1Cone", AutoCommandGroups.doAutonomousScoreOne("Auto1Cone"));
 
     csChooser.setDefaultOption("Middle", "Mid");
@@ -240,15 +241,15 @@ public class RobotContainer {
   }
 
   private void configureSwerveSetup() {
-    SmartDashboard.putData(new DriveAdjustModulesManually());
+    //SmartDashboard.putData(new DriveAdjustModulesManually());
     SmartDashboard.putData(new DriveResetAllModulePositionsToZero());
-    SmartDashboard.putData(new DriveOneModule(0));
-    SmartDashboard.putData(new DriveOneModule(1));
-    SmartDashboard.putData(new DriveOneModule(2));
-    SmartDashboard.putData(new DriveOneModule(3));
-    SmartDashboard.putData(new DriveAllModulesPositionOnly());
-    SmartDashboard.putData(new DriveStopAllModules());
-    SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
+    //SmartDashboard.putData(new DriveOneModule(0));
+    //SmartDashboard.putData(new DriveOneModule(1));
+    //SmartDashboard.putData(new DriveOneModule(2));
+    //SmartDashboard.putData(new DriveOneModule(3));
+    //SmartDashboard.putData(new DriveAllModulesPositionOnly());
+    //SmartDashboard.putData(new DriveStopAllModules());
+    //SmartDashboard.putData(new DriveTurnToAngleInRad(Constants.PI_OVER_TWO));
 
     // 1518
     SmartDashboard.putData(new DriveTranslationExport());
@@ -272,8 +273,8 @@ public class RobotContainer {
     /* General Setup Commands */
     SmartDashboard.putData(new SetupToggle());
     SmartDashboard.putData(new ShoulderSetup());
-    SmartDashboard.putData(new TelescopeSetup());
-    SmartDashboard.putData(new WristSetup());
+    //SmartDashboard.putData(new TelescopeSetup());
+    //SmartDashboard.putData(new WristSetup());
     SmartDashboard.putData(new SetArmBrake());
     SmartDashboard.putData(new SetArmCoast());
 
@@ -288,19 +289,19 @@ public class RobotContainer {
 
     /* Wrist */
     // setupWristChooser.addOption("Find Max/Mins", new WristSetMaxMin()); // Read comment at top of class
-    setupWristChooser.addOption("Set Max (90 deg)", new WristSetMax());
+    /*setupWristChooser.addOption("Set Max (90 deg)", new WristSetMax());
     setupWristChooser.addOption("Set Idle Pos", new WristSetIdle());
     setupWristChooser.addOption("Set Min (Level)", new WristSetMin());
     setupWristChooser.addOption("Export Motion Data", new WristExportData());
     setupWristChooser.setDefaultOption("None", new WaitCommand(1));
-    SmartDashboard.putData(setupWristChooser);
+    SmartDashboard.putData(setupWristChooser);*/
 
 
     /* Telescope */
-    setupTelescopeChooser.addOption("Set Min (In)", new TelescopeSetMin());
+    /*setupTelescopeChooser.addOption("Set Min (In)", new TelescopeSetMin());
     setupTelescopeChooser.addOption("Set Max (Out)", new TelescopeSetMax());
     setupTelescopeChooser.setDefaultOption("None", new WaitCommand(1));
-    SmartDashboard.putData(setupTelescopeChooser);
+    SmartDashboard.putData(setupTelescopeChooser);*/
 
   }
 

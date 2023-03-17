@@ -1,7 +1,6 @@
 package frc.robot.commands.autonomous.shoulder;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class AutoRotateShoulderCarrying extends CommandBase {
@@ -11,7 +10,7 @@ public class AutoRotateShoulderCarrying extends CommandBase {
 
     @Override
     public void execute() {
-        RobotContainer.armSubsystem.setShoulderTargetPos(Constants.ARM_SHOULDER_LOWERSWITCH_DEG+45, true);
+        RobotContainer.armSubsystem.setShoulderTargetPos(69, true);
     }
 
     @Override

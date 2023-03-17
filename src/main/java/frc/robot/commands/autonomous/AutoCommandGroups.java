@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.PlaceMode;
+import frc.robot.commands.autonomous.claw.AutoDropObjectClaw;
+import frc.robot.commands.autonomous.claw.AutoFeedClaw;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderCarrying;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderGrabbing;
 import frc.robot.commands.autonomous.shoulder.AutoRotateShoulderIdle;
@@ -17,6 +19,9 @@ import frc.robot.commands.autonomous.telescope.AutoTelescopeDisable;
 import frc.robot.commands.autonomous.telescope.AutoTelescopeEnable;
 import frc.robot.commands.autonomous.telescope.ResetTelescopeSeconds;
 import frc.robot.commands.autonomous.telescope.SetTelescopeSeconds;
+import frc.robot.commands.operational.claw.ClawStop;
+import frc.robot.commands.operational.shoulder.AutoShoulderMoveOffset;
+import frc.robot.commands.operational.shoulder.ShoulderMoveOffset;
 import frc.robot.commands.struct.Autos;
 
 public class AutoCommandGroups {
@@ -27,6 +32,7 @@ public class AutoCommandGroups {
         double telescopeSecondsGrabbing = 0.25d;
         telescopeSeconds+=telescopeSecondsGrabbing;
         return new SequentialCommandGroup(
+            retractTelescope(),
             new AutoRotateShoulderGrabbing(),
             new WaitCommand(0.5d),
 
@@ -60,9 +66,42 @@ public class AutoCommandGroups {
 
     public static SequentialCommandGroup rotateArmPlacing(PlaceMode placeMode) {
         return new SequentialCommandGroup(
+            retractTelescope(),
             new AutoRotateShoulderPlacing(placeMode),
             new WaitCommand(0.5d),
             moveTelescopePlacing(placeMode)
+        );
+    }
+
+    public static SequentialCommandGroup placeCubeLow() {
+        return new SequentialCommandGroup(
+            new AutoShoulderMoveOffset(27.5d),
+            new WaitCommand(1.25d),
+            pukeItem()
+        );
+    }
+
+    public static SequentialCommandGroup placeObject(PlaceMode placeMode) {
+        return new SequentialCommandGroup(
+            rotateArmPlacing(placeMode),
+            new WaitCommand(0.5d),
+            pukeItem()
+        );
+    }
+
+    public static SequentialCommandGroup pukeItem() {
+        return new SequentialCommandGroup(
+            new AutoDropObjectClaw(),
+            new WaitCommand(1.25d),
+            new ClawStop()
+        );
+    }
+
+    public static SequentialCommandGroup intakeItem() {
+        return new SequentialCommandGroup(
+            new AutoFeedClaw(),
+            new WaitCommand(1d),
+            new ClawStop()
         );
     }
 

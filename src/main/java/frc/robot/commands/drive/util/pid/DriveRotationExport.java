@@ -29,7 +29,7 @@ public class DriveRotationExport extends CommandBase {
     public void initialize() {
         RobotContainer.swerveDrive.stopAllModules();
         RobotContainer.swerveDrive.resetPose();
-        RobotContainer.swerveDrive.resetContinuousRotPos(0);
+        RobotContainer.swerveDrive.resetContinuousRotPos(1);
         time = -1L;
         inputSpeed = 0.0d;
         setupFileWriting();
@@ -43,7 +43,7 @@ public class DriveRotationExport extends CommandBase {
             time = System.currentTimeMillis();
         }
         doSteps();
-        writeData(inputSpeed, RobotContainer.swerveDrive.getSensorRotPos(0));
+        writeData(inputSpeed, RobotContainer.swerveDrive.getSensorRotPos(1));
     }
   
     @Override
@@ -68,45 +68,45 @@ public class DriveRotationExport extends CommandBase {
 
     private void firstStep() {
         if(isInTimeRange(0.0d, 3.5d)) {
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         } else if(isInTimeRange(3.5d, 7.0d)) {
             inputSpeed = rotateFactorOne;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         } else if(isInTimeRange(7.0d,10.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         }
     }
 
     private void secondStep() {
         if(isInTimeRange(10.5d, 14.0d)) {
             inputSpeed = -rotateFactorOne;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         } else if(isInTimeRange(14.0d, 17.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         }
     }
 
     private void thirdStep() {
         if(isInTimeRange(17.5d, 21.0d)) {
             inputSpeed = rotateFactorTwo;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         }
         if(isInTimeRange(21.0d, 24.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         }
     }
 
     private void fourthStep() {
         if(isInTimeRange(24.5d, 28.0d)) {
             inputSpeed = -rotateFactorTwo;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         }
         if(isInTimeRange(28.0d, 31.5d)) {
             inputSpeed = 0.0d;
-            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 0);
+            RobotContainer.swerveDrive.simpleDriveRotationControlPercent(inputSpeed, 1);
         } else if(isInTimeRange(31.5d, 100.0d)) {
             inputSpeed = 0.0d;
             this.end(true);

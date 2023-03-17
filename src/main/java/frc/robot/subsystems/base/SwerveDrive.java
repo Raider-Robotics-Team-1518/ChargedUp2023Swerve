@@ -103,8 +103,8 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Gyro", this.getGyroInDeg());
-    SmartDashboard.putNumber("XPos", getCurPose2d().getX());
-    SmartDashboard.putNumber("YPos", getCurPose2d().getY());
+    //SmartDashboard.putNumber("XPos", getCurPose2d().getX());
+    //SmartDashboard.putNumber("YPos", getCurPose2d().getY());
     SmartDashboard.putBoolean("FieldRelativeEnabled", this.isFieldRelative);
 
 
@@ -126,6 +126,14 @@ public class SwerveDrive extends SubsystemBase {
     //pass along SwerveModuleStates to SwerveModules and pass along boolean isVeloMode
     for (int i = 0; i < states.length; i++) {
         swerveModules[i].setModuleState(states[i], false);
+    }
+  }
+
+  public void setModuleStatesVelocity(SwerveModuleState[] states) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.MOTOR_MAXIMUM_VELOCITY);
+    //pass along SwerveModuleStates to SwerveModules and pass along boolean isVeloMode
+    for (int i = 0; i < states.length; i++) {
+        swerveModules[i].setModuleState(states[i], true);
     }
   }
 

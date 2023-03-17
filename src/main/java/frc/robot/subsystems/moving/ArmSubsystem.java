@@ -115,7 +115,7 @@ public class ArmSubsystem extends SubsystemBase {
         if(this.isDumping) return;
         if(ShoulderSetMaxMin.isRunning) return;
 
-        if(!DriverStation.isEnabled()) {
+        if(!DriverStation.isEnabled() && !DriverStation.isAutonomousEnabled()) {
             return;
         }
         //!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
@@ -183,12 +183,15 @@ public class ArmSubsystem extends SubsystemBase {
 
         if(topLimitReached) {
             if(diff > 0) {
-                currentShoulderSetpoint = ((Constants.ARM_SHOULDER_UPPERSWITCH_DEG+Constants.ARM_SHOULDER_LOWERSWITCH_DEG)/180)*maxShoulderPos;
+                currentShoulderSetpoint = ((Constants.ARM_SHOULDER_UPPERSWITCH_DEG)/180)*maxShoulderPos;
                 return;
             }
         }
     
-        if(angle) targetPos = ((target/180)*maxShoulderPos);
+        if(angle) {
+            target -= Constants.ARM_SHOULDER_LOWERSWITCH_DEG;
+            targetPos = ((target/180)*maxShoulderPos);
+        }
         currentShoulderSetpoint = targetPos;
     }
 
@@ -210,6 +213,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void fixateShoulder() {
         double motorOut = shoulderPidController.calculate(getShoulderPosition(), currentShoulderSetpoint);
+        if(motorOut > Constants.maxShoulderSpeed) motorOut = Constants.maxShoulderSpeed;
         if(!shoulderPidController.atSetpoint()) {
             shoulderMotor.set(motorOut);
         } else {

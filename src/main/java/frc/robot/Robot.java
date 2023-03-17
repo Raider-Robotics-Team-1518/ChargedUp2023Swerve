@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
       autonomousCommand.cancel();
     }
     
-    RobotContainer.swerveDrive.resetGyro();
+    //RobotContainer.swerveDrive.resetGyro();
     // set the first shoulder target to what it currently is so we arent
     // "jumping" - Kevin Schlegel 2023
     RobotContainer.armSubsystem.setShoulderTargetPos(RobotContainer.armSubsystem.getShoulderPosition(), false);

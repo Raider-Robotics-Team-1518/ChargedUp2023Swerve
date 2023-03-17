@@ -51,6 +51,8 @@ public final class Constants {
      public static final double clawFeedSpeed = 0.375d;
      public static final double clawDropSpeed = 0.5d;
 
+     public static final double maxShoulderSpeed = 0.25d;
+
      /* Autonomous */
      public static final double autoTelescopeSpeed = 0.5d;
      public static final double autoClawSpeed = 0.25d;
@@ -81,7 +83,7 @@ public final class Constants {
      * Non-Swerve PID
      */
      // Shoulder PID
-     public static final double ARM_SHOULDER_P = 0.05; // 0.05
+     public static final double ARM_SHOULDER_P = 0.0425; // 0.05
      public static final double ARM_SHOULDER_I = 0.00; 
      public static final double ARM_SHOULDER_D = 0.0005; // 0.0005
 
@@ -143,7 +145,7 @@ public final class Constants {
     public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(0.4826,-0.4826); 
 
     /* Swerve Module Drive Motor Constants */
-    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00003829298477;
+    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00003806684;
     // rob old: (1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
     // semi working value (tested): 0.0000382966
     // 382929
@@ -152,11 +154,13 @@ public final class Constants {
     // encoderPos*DRIVE_ENC_TO_METERS_FACTOR=distanceTraveled
     // encoderPos*(1/2048)*(1/8.14)*(2*3.14159265*0.1016)=distanceTraveled
     // (1/2048)*(1/8.14)*(2*3.14159265*0.1016) = 0.00003829298477 
+    // YEAH: (1/2048)*(1/8.14)*(pi*0.101)=0.00001903342
+    // *2 = 0.00003806684
     // (Calculated using Full Precision calculator, up to 100 decimal places)
 
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
-    public static final double MOTOR_MAXIMUM_VELOCITY = 4.1; // 4.62 default
+    public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default
     public static final double PATH_MAXIMUM_VELOCITY = 2.75d;
     public static final double MAXIMUM_ACCELERATION = 1.25d;
     public static final double PATH_MAXIMUM_ACCELERATION = 1.25;
@@ -172,6 +176,10 @@ public final class Constants {
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
     public static final double SWERVE_DRIVE_D_VALUE = 0.007322; // 0.00089375
     public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
+
+    public static final double SWERVE_DRIVE_P_VELOCITY = -0.0256135252274057; //0.2928
+    public static final double SWERVE_DRIVE_I_VELOCITY = -0.42515784024188247;
+    public static final double SWERVE_DRIVE_D_VELOCITY = 0.0; // 0.00089375
     //public static final double SWERVE_DRIVE_FF_VALUE = 0.0d;
 
     /* Swerve Module Rotation constants */ 
@@ -184,11 +192,11 @@ public final class Constants {
 
     /* PID Constants for rotation of the swerve module */
     /* Input: Motor ControlPercent Speed
-     * Output: Encoder Position
+     * Output: Encoder Position (In Radians)
      */
-    public static final double SWERVE_ROT_P_VALUE = 0.2501474825939262; // 0.02*4 rob
+    public static final double SWERVE_ROT_P_VALUE = 0.2241671475395803; // 0.02*4 rob
     public static final double SWERVE_ROT_I_VALUE = 0.0;
-    public static final double SWERVE_ROT_D_VALUE = 0.005002949651878525;  // .05*4 rob
+    public static final double SWERVE_ROT_D_VALUE = 0.006725014426187409;  // .05*4 rob
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;
     public static final double SWERVE_ROT_FF_VALUE = 0.0;
     
@@ -211,6 +219,7 @@ public final class Constants {
 
     /* Driver Scaling Constants */
     public static final double DRIVER_SPEED_SCALE_LINEAR = 0.5;
+    public static final double DRIVER_SPEED_SCALE_LINEAR_LATERAL = 0.375;
     public static final double DRIVER_SPEED_SCALE_ROTATIONAL = .75;
 
     
@@ -241,16 +250,17 @@ public final class Constants {
     /* Digital Input */
 
     public enum PlaceMode {
-      LOW_NODE_CONE(ROBOT_SIZE-DIST_TO_LOWER_NODE),
-      MID_NODE_CONE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CONE),
-      HIGH_NODE_CONE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CONE),
-      LOW_NODE_CUBE(ROBOT_SIZE-DIST_TO_LOWER_NODE),
-      MID_NODE_CUBE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CUBE),
-      HIGH_NODE_CUBE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CUBE);
+      LOW_NODE_CONE(ROBOT_SIZE-DIST_TO_LOWER_NODE, 0),
+      MID_NODE_CONE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CONE, 0.25),
+      HIGH_NODE_CONE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CONE, 0.625),
+      LOW_NODE_CUBE(ROBOT_SIZE-DIST_TO_LOWER_NODE, 0),
+      MID_NODE_CUBE(ROBOT_SIZE-DIST_TO_MIDDLE_NODE_CUBE, 0.25),
+      HIGH_NODE_CUBE(ROBOT_SIZE-DIST_TO_UPPER_NODE_CUBE, 0.6);
       // Math.asin((ROBOT_SIZE-DIST_TO_UPPER_NODE_CUBE))/TOWER_HEIGHT_TO_PIVOT
-      private final double distance;
-      private PlaceMode(double distance) {
+      private final double distance, time;
+      private PlaceMode(double distance, double time) {
         this.distance = distance;
+        this.time = time;
       }
 
       public double getAngle() {
@@ -260,10 +270,11 @@ public final class Constants {
       }
 
       public double getWaitTime() {
-        double neededExtensionMeters = ((this.distance)/Math.sin(getAngle()))*Math.sin(90);
+        /*double neededExtensionMeters = ((this.distance)/Math.sin(getAngle()))*Math.sin(90);
         neededExtensionMeters = Math.abs(neededExtensionMeters);
         neededExtensionMeters -= TELESCOPE_LENGTH_RETRACTED;
-        return neededExtensionMeters/ARM_TELESCOPE_VELOCITY;
+        return neededExtensionMeters/ARM_TELESCOPE_VELOCITY;*/
+        return time;
       }
     }
 

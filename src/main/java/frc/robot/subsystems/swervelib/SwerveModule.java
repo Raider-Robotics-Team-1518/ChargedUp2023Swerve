@@ -7,12 +7,15 @@
 
 package frc.robot.subsystems.swervelib;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -36,7 +39,11 @@ import frc.robot.Constants;
  * More on swerve found here:
  * https://docs.google.com/presentation/d/1feVl0L5lgIKSZhKCheWgWhkOydIu-ibgdp7oqA0yqAQ/edit?usp=sharing
  */
+
+
 public class SwerveModule {
+
+    private PIDController driveVelocityController = new PIDController(Constants.SWERVE_DRIVE_P_VELOCITY, Constants.SWERVE_DRIVE_I_VELOCITY, Constants.SWERVE_DRIVE_D_VELOCITY);
     private TalonFX driveMotor;
     private TalonFX rotationMotor;
 
@@ -62,7 +69,7 @@ public class SwerveModule {
         driveMotor.configFactoryDefault();
         // use the integrated sensor with the primary closed loop and timeout is 0.
         driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        driveMotor.configSelectedFeedbackCoefficient(1);//Constants.DRIVE_ENC_TO_METERS_FACTOR);
+        driveMotor.configSelectedFeedbackCoefficient(Constants.DRIVE_ENC_TO_METERS_FACTOR);//Constants.DRIVE_ENC_TO_METERS_FACTOR);
         // above uses configSelectedFeedbackCoefficient(), to scale the
         // driveMotor to real distance, DRIVE_ENC_TO_METERS_FACTOR
         driveMotor.setNeutralMode(NeutralMode.Brake);
@@ -141,7 +148,8 @@ public class SwerveModule {
      * @param speed a speed in meters per second
      */
     public void setDriveSpeed(double speed) {
-        driveMotor.set(TalonFXControlMode.Velocity, speed );
+        double dutyCycleSpeed = driveVelocityController.calculate(this.getDriveVelocity(), speed);
+        driveMotor.set(TalonFXControlMode.PercentOutput, dutyCycleSpeed);
     }
 
     
@@ -359,8 +367,17 @@ public class SwerveModule {
             } else {
                 setDriveMotor(targetState.speedMetersPerSecond);
             }
+            
         }
     }  
+
+    public double getExpectedInVelocity() {
+        return this.driveMotor.getMotorOutputPercent();
+    }
+
+    public double getOutVelocity() {
+        return this.driveMotor.getSelectedSensorVelocity();
+    }
 
     /**
      * The method to set the module to a position and speed. 

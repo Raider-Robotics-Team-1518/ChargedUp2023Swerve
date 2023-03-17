@@ -5,9 +5,13 @@ import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -39,6 +43,11 @@ public class Autos {
     public static Command getFullAuto(String pathName) {
         List<PathPlannerTrajectory> pathGroup;
         pathGroup = PathPlanner.loadPathGroup(pathName, new PathConstraints(Constants.PATH_MAXIMUM_VELOCITY, Constants.PATH_MAXIMUM_ACCELERATION));
+        if(DriverStation.getAlliance() == Alliance.Red) {
+            for(PathPlannerTrajectory trajectory : pathGroup) {
+                trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+            }
+        }
         RobotContainer.swerveDrive.driveOdometry.resetPosition(pathGroup.get(0).getInitialState().holonomicRotation, RobotContainer.swerveDrive.getSwerveModulePositions(), pathGroup.get(0).getInitialState().poseMeters);
         return autoBuilder.fullAuto(pathGroup);
     }
