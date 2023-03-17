@@ -81,7 +81,7 @@ public final class Constants {
      * Non-Swerve PID
      */
      // Shoulder PID
-     public static final double ARM_SHOULDER_P = 0.035; // 0.05
+     public static final double ARM_SHOULDER_P = 0.05; // 0.05
      public static final double ARM_SHOULDER_I = 0.00; 
      public static final double ARM_SHOULDER_D = 0.0005; // 0.0005
 
@@ -162,22 +162,31 @@ public final class Constants {
     public static final double MAXIMUM_VOLTAGE = 12.0;//this is used in compensating for drops in battery voltage
 
     /* Swerve Move Wheel PIDF constants */
+    /* PID Constants for rotation of the swerve module */
+    /* Input: ControlPercent Speed
+     * Output: Translation Position (Pose2d X or Y)
+     */
     public static final double SWERVE_DRIVE_P_VALUE = 0.2928; //0.2928
     public static final double SWERVE_DRIVE_I_VALUE = 0.0;
     public static final double SWERVE_DRIVE_D_VALUE = 0.007322; // 0.00089375
-    //public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
-    public static final double SWERVE_DRIVE_FF_VALUE = 0.0d;
+    public static final double SWERVE_DRIVE_FF_VALUE = 1023 / (MOTOR_MAXIMUM_VELOCITY / DRIVE_ENC_TO_METERS_FACTOR);
+    //public static final double SWERVE_DRIVE_FF_VALUE = 0.0d;
 
     /* Swerve Module Rotation constants */ 
-    public static final double RAD_TO_ENC_CONV_FACTOR = 2653.2274929;
+    public static final double RAD_TO_ENC_CONV_FACTOR = (512*8.14)/(Math.PI/2);
     // rob old (tested, broken): (1outputRev/(2*3.1415 radians)) * (12.8 motorRev / 1 outputRev) * (4096 u / 1 motorRev) = 8344.5488
-    // !! newest calculation (not tested) !!
+    // !! newest calculation (tested, weird) !!
     // (1/(2*pi))*2048*8.14 = 2653.2274929
+    // 512/(pi/2)=325.949323452
+    // (512*8.14)/(Math.PI/2)=2653.2274929
 
     /* PID Constants for rotation of the swerve module */
-    public static final double SWERVE_ROT_P_VALUE = 0.02*4; // -0.025
+    /* Input: Motor ControlPercent Speed
+     * Output: Encoder Position
+     */
+    public static final double SWERVE_ROT_P_VALUE = 0.2501474825939262; // 0.02*4 rob
     public static final double SWERVE_ROT_I_VALUE = 0.0;
-    public static final double SWERVE_ROT_D_VALUE = 0.05*4;  // 0.05
+    public static final double SWERVE_ROT_D_VALUE = 0.005002949651878525;  // .05*4 rob
     public static final double SWERVE_ROT_I_ZONE_VALUE = 0;
     public static final double SWERVE_ROT_FF_VALUE = 0.0;
     

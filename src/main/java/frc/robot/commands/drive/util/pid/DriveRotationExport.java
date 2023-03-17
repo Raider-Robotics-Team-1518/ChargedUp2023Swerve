@@ -43,7 +43,7 @@ public class DriveRotationExport extends CommandBase {
             time = System.currentTimeMillis();
         }
         doSteps();
-        writeData(inputSpeed, RobotContainer.swerveDrive.getContinuousRotAngle(0));
+        writeData(inputSpeed, RobotContainer.swerveDrive.getSensorRotPos(0));
     }
   
     @Override

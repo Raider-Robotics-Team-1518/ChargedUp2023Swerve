@@ -384,6 +384,10 @@ public class SwerveDrive extends SubsystemBase {
     return swerveModules[modNumber].getRotationSensorPosContinuous()/Constants.RAD_TO_ENC_CONV_FACTOR;
   }
 
+  public double getSensorRotPos(int modNumber) {
+    return swerveModules[modNumber].getRotationSensorPosContinuous();
+  }
+
   public void resetContinuousRotPos(int modNumber) {
     swerveModules[modNumber].resetRotationSensorPosition();
   }
