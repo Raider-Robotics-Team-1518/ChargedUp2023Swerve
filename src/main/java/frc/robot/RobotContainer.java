@@ -6,6 +6,7 @@ package frc.robot;
 
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -134,7 +135,7 @@ public class RobotContainer {
     armSubsystem = new ArmSubsystem();
     clawSubsystem = new ClawSubsystem();
     swerveDrive = new SwerveDrive();
-    swerveDrive.setDefaultCommand(new DriveRobotCentric(false));
+    swerveDrive.setDefaultCommand(new DriveFieldRelative(false));
 
     configureSwerveSetup();
     configureSetupModes();
@@ -143,7 +144,9 @@ public class RobotContainer {
     configureAutonomousEventMap();
     
     SmartDashboard.putData(new DriveAdjustModulesManually());
-    CameraServer.startAutomaticCapture();
+    //NetworkTableInstance
+    //NetworkTableInstance.getDefault().flush();
+    //CameraServer.startAutomaticCapture();
   }
     /*
      * (X,Y) End Positions for Out of way Paths
@@ -177,27 +180,28 @@ public class RobotContainer {
     driverBack.toggleOnTrue(new DriveFieldRelative(false));
     //driverBack.or(driverStart).toggleOnTrue(new DriveFieldRelative(false));
 
-    /* =================== CODRIVER BUTTONS =================== 
+    /* =================== CODRIVER BUTTONS =================== */
 
-    coDriverA.whileTrue(new ShoulderMoveOffset(0.75));
-    coDriverB.whileTrue(new ShoulderMoveOffset(-0.75));
+    // coDriverA.whileTrue(new ShoulderMoveOffset(0.75));
+    // coDriverB.whileTrue(new ShoulderMoveOffset(-0.75));
 
-    coDriverX.whileTrue(new TelescopeMove(0.25d)).onFalse(new TelescopeStop());
-    coDriverY.whileTrue(new TelescopeMove(-0.25d)).onFalse(new TelescopeStop());
+    // coDriverX.whileTrue(new TelescopeMove(0.25d)).onFalse(new TelescopeStop());
+    // coDriverY.whileTrue(new TelescopeMove(-0.25d)).onFalse(new TelescopeStop());
     
-    coDriverDUp.whileTrue(new WristMove(0.25d)).onFalse(new WristStop());
-    coDriverDDown.whileTrue(new WristMove(-0.25d)).onFalse(new WristStop());
+    // coDriverDUp.whileTrue(new WristMove(0.25d)).onFalse(new WristStop());
+    // coDriverDDown.whileTrue(new WristMove(-0.25d)).onFalse(new WristStop());
 
-    coDriverBack.toggleOnTrue(new WristToggleLock());
+    // coDriverBack.toggleOnTrue(new WristToggleLock());
 
-    coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
-    coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());*/
+    // coDriverRB.whileTrue(new ClawMove(0.25d)).onFalse(new ClawStop());
+    // coDriverLB.whileTrue(new ClawMove(-0.25d)).onFalse(new ClawStop());
+
     //coDriverStart.toggleOnTrue(new WristToggleLock());
-    coDriverX.whileTrue(new ClawMove(Constants.clawFeedSpeed)).onFalse(new ClawStop());
-    coDriverY.whileTrue(new ClawMove(-Constants.clawDropSpeed)).onFalse(new ClawStop());
+    coDriverX.whileTrue(new ClawMove(Constants.clawDropSpeed)).onFalse(new ClawStop());
+    coDriverY.whileTrue(new ClawMove(-Constants.clawFeedSpeed)).onFalse(new ClawStop());
     //coDriverY.whileTrue(new ClawMove(Constants.clawSpeed)).onFalse(new ClawStop());
     //coDriverDUp.whileTrue(new WristMove(Constants.wristSpeed)).onFalse(new WristStop());
-    coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
+    // coDriverDDown.whileTrue(new WristMove(-Constants.wristSpeed)).onFalse(new WristStop());
     coDriverRB.whileTrue(new TelescopeMove(Constants.telescopeSpeed)).onFalse(new TelescopeStop());
     coDriverLB.whileTrue(new TelescopeMove(-Constants.telescopeSpeed)).onFalse(new TelescopeStop());
     coDriverA.whileTrue(new ShoulderMoveOffset(Constants.shoulderUpSpeed));

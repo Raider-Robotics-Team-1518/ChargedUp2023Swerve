@@ -105,7 +105,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Gyro", this.getGyroInDeg());
     //SmartDashboard.putNumber("XPos", getCurPose2d().getX());
     //SmartDashboard.putNumber("YPos", getCurPose2d().getY());
-    SmartDashboard.putBoolean("FieldRelativeEnabled", this.isFieldRelative);
+    SmartDashboard.putBoolean("FieldRelativeEnabled", isFieldRelative);
 
 
     //run odometry update on the odometry object

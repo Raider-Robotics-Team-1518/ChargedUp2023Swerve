@@ -145,7 +145,7 @@ public final class Constants {
     public static final Translation2d FRONT_RIGHT_POSITION = new Translation2d(0.4826,-0.4826); 
 
     /* Swerve Module Drive Motor Constants */
-    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00003806684;
+    public static final double DRIVE_ENC_TO_METERS_FACTOR = 0.00001903342;
     // rob old: (1motorRev/4096 u) * (8.14 outputRev/ 1 motorRev) * ((0.1016m * 3.1415)/ 1 outputRev) = 0.0006343
     // semi working value (tested): 0.0000382966
     // 382929
@@ -157,7 +157,7 @@ public final class Constants {
     // YEAH: (1/2048)*(1/8.14)*(pi*0.101)=0.00001903342
     // *2 = 0.00003806684
     // (Calculated using Full Precision calculator, up to 100 decimal places)
-
+    
     public static final double MINIMUM_DRIVE_SPEED = 0.01;// the slowest the wheels can turn, in m/s
     public static final double MINIMUM_DRIVE_DUTY_CYCLE = 0.05;// the slowest the wheels can turn, in duty cycle output
     public static final double MOTOR_MAXIMUM_VELOCITY = 4.62; // 4.62 default

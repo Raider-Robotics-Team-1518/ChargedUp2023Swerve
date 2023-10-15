@@ -120,8 +120,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
         //!!!!!!!!!!!!!!!!! Enable-Require Tasks !!!!!!!!!!!!!!!!!!!!
         fixateShoulder(); //fixate just shoulder motor
-        //fixateWrist();
-        //fixateArm(INSTANCE.lockedWrist); // fixate both
+        fixateWrist();
+        // fixateArm(INSTANCE.lockedWrist); // fixate both
     }
 
     public void offsetShoulder(double offset) {
